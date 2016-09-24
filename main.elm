@@ -57,37 +57,26 @@ main =
   App.beginnerProgram { model = chapter1, update = update, view = view }
 
 
-
 -- MODEL
 
 
-type alias Model =
-  { fontSize : Account.FontSize
-  , content : String
-  }
+type IncomeEvent = {
+  name : String,
+  applicableAccount : String,
+  percentChange : Float,
+  flatChange : Int,
+}
 
 
-chapter1 : Model
-chapter1 =
-  Model Account.Medium intro
+type Account = {
+	name : String,
+  vaule : Float,
+}
 
-
-intro : String
-intro = """
-
-# Anna Karenina
-
-## Chapter 1
-
-Happy families are all alike; every unhappy family is unhappy in its own way.
-
-Everything was in confusion in the Oblonskys’ house. The wife had discovered
-that the husband was carrying on an intrigue with a French girl, who had been
-a governess in their family, and she had announced to her husband that she
-could not go on living in the same house with him...
-
-"""
-
+type alias Model = { 
+  incomeEvents : [IncomeEvent],
+  accounts : [Account]
+}
 
 
 -- UPDATE

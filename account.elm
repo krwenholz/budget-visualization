@@ -29,7 +29,7 @@ def elapse_time(years, annual_rate_of_return, amount_to_invest, amount_to_vacati
 module Account exposing (..)
 
 
-type FontSize
-  = Small
-  | Medium
-  | Large
+type Account = {
+	name : String,
+  vaule : Float,
+}

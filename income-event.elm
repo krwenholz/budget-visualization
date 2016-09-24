@@ -36,3 +36,7 @@ def charitable_giving(month, year):
   return -400
 -}
 module IncomeEvent exposing (..)
+
+type IncomeEvent = {
+	
+}
