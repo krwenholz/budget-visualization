@@ -60,23 +60,20 @@ main =
 -- MODEL
 
 
-type IncomeEvent = {
+type alias IncomeEvent = {
   name : String,
   applicableAccount : String,
   percentChange : Float,
-  flatChange : Int,
-}
+  flatChange : Int }
 
 
-type Account = {
+type alias Account = {
 	name : String,
-  vaule : Float,
-}
+  value : Float }
 
 type alias Model = { 
-  incomeEvents : [IncomeEvent],
-  accounts : [Account]
-}
+  incomeEvents : List IncomeEvent,
+  accounts : List Account }
 
 
 -- UPDATE
