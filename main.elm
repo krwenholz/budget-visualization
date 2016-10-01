@@ -49,8 +49,6 @@ import Html.App as App
 import Html.Attributes exposing (name, style, type')
 import Html.Events exposing (onClick)
 import Markdown
-import Account
-
 
 
 main =
@@ -58,76 +56,61 @@ main =
 
 
 -- MODEL
-
-
 type alias IncomeEvent = {
   name : String,
-  applicableAccount : String,
-  percentChange : Float,
-  flatChange : Int }
-
+  change : Int }
 
 type alias Account = {
 	name : String,
-  value : Float }
+  initialValue : Float,
+  incomeEvents : List IncomeEvent }
 
-type alias Model = { 
+type alias Model = {
   incomeEvents : List IncomeEvent,
   accounts : List Account }
 
+type UpdateAccountMsg = {
+	name : String,
+  initialValue : Float,
+  incomeEventName: Maybe IncomeEvent }
+
+type Msg = UpdateAccountMsg
+
+model : Model
+model = Model [IncomeEvent "" "" 0 0] [Account "" 0]
+
 
 -- UPDATE
+hasName : a -> String -> Bool
+hasName name { otherName } = name == otherName
 
-
-type Msg
-  = SwitchTo Account.FontSize
-
+containsItemWithName : List a -> String -> Bool
+containsItemWithName list name =
+  List.any (\{ otherName } -> name == otherName)
 
 update : Msg -> Model -> Model
 update msg model =
   case msg of
-    SwitchTo newFontSize ->
-      { model | fontSize = newFontSize }
-
+    IncomeEventMsg incomeEvent ->
+        { model | incomeEvents =
+            incomeEvent :: (List.filter (not hasName incomeEvent.name) model.incomeEvents) }
+    AccountMsg account ->
+        { model | accounts =
+            account :: (List.filter (not hasName account.name) model.accounts) }
 
 
 -- VIEW
-
-
+inputIncomeEvents : List IncomeEvent -> List Account -> Html
+inputIncomeEvents events accounts=
+  List.map (\ie -> [ input [ type' "text", placeholder "Name", onInput TODO ] [],
+                     select [] (List.map (\account -> account.name) accounts),
+                     input [ type' "number", placeholder "Monthly change (flat)", onInput TODO ] [],
+                     input [ type' "number", placeholder "Monthly change (percentage)", onInput TODO ] [])
 view : Model -> Html Msg
 view model =
-  div []
-    [ fieldset []
-        [ radio "Small" (SwitchTo Account.Small)
-        , radio "Medium" (SwitchTo Account.Medium)
-        , radio "Large" (SwitchTo Account.Large)
-        ]
-    , Markdown.toHtml [ sizeToStyle model.fontSize ] model.content
+  div [] (List.map (\ie -> input )
+    [ input [ type' "text", placeholder "Name", onInput Name ] []
+    , input [ type' "password", placeholder "Password", onInput Password ] []
+    , input [ type' "password", placeholder "Re-enter Password", onInput PasswordAgain ] []
+    , viewValidation model
     ]
-
-
-radio : String -> msg -> Html msg
-radio value msg =
-  label
-    [ style [("padding", "20px")]
-    ]
-    [ input [ type' "radio", name "font-size", onClick msg ] []
-    , text value
-    ]
-
-
-sizeToStyle : Account.FontSize -> Attribute msg
-sizeToStyle fontSize =
-  let
-    size =
-      case fontSize of
-        Account.Small ->
-          "0.8em"
-
-        Account.Medium ->
-          "1em"
-
-        Account.Large ->
-          "1.2em"
-  in
-    style [("font-size", size)]
