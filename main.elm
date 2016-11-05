@@ -44,7 +44,7 @@ def elapse_time(years, annual_rate_of_return, amount_to_invest, amount_to_vacati
   -- would be nice to include optional horizontal bars for each event type, marking when important
     -- events happened
 
-import Html exposing (Html, Attribute, div, fieldset, input, label, text, ol, li)
+import Html exposing (Html, Attribute, div, fieldset, input, label, text, ol, ul, li)
 import Html.App as App
 import Html.Attributes exposing (name, style, type', placeholder)
 import Html.Events exposing (onClick, onInput)
@@ -138,10 +138,10 @@ update msg model =
 
 
 -- VIEW
-incomeEventInputs : List IncomeEvent -> String -> List (Html Msg)
+incomeEventInputs : List IncomeEvent -> String -> Html Msg
 incomeEventInputs incomeEvents accountName =
-  List.map (\ie ->
-    div []
+  ul [] (List.map (\ie ->
+    li []
       [ input [ type' "text",
                 placeholder ie.name,
                 onInput (\newName -> UpdateIncomeEventMsg (UpdateIncomeEventDetails accountName
@@ -158,7 +158,7 @@ incomeEventInputs incomeEvents accountName =
                                                                 (Result.withDefault 0 (String.toInt change)))) ]
               []
       ]
-  ) incomeEvents
+  ) incomeEvents)
 
 accountInputs : List Account -> List (Html Msg)
 accountInputs accounts =
@@ -175,7 +175,7 @@ accountInputs accounts =
                                                            account.name
                                                            (Result.withDefault 0 (String.toFloat value)))) ]
               []
-      --, section [] (incomeEventInputs account.incomeEvents account.name)
+      , (incomeEventInputs account.incomeEvents account.name)
       ]
   ) accounts
 
@@ -184,13 +184,13 @@ accountInputs accounts =
 -- TODO: function to set + button displays based on the accounts and income events that require names
         -- hover text could tell folks they need to input names
 
-showModel : Model -> List (Html a)
+showModel : Model -> Html a
 showModel model =
-  [ol [] (List.map (\account -> li [] [(text ("name: " ++ account.name  ++ " val: " ++ (toString account.initialValue))),
+  ol [] (List.map (\account -> li [] [(text ("name: " ++ account.name  ++ " val: " ++ (toString account.initialValue))),
                                              ol [] (List.map (\ie -> li [] [text ("name: " ++ ie.name ++ " change: " ++ (toString ie.change))])
                                                              account.incomeEvents)])
-                   model)]
+                   model)
 
 view : Model -> Html Msg
 view model =
-  div [] [div [] (accountInputs model), div [] (showModel model)]
+  div [] [div [] (accountInputs model), div [] [showModel model]]
