@@ -46,13 +46,12 @@ def elapse_time(years, annual_rate_of_return, amount_to_invest, amount_to_vacati
 
 import Html exposing (Html, Attribute, div, fieldset, input, label, text)
 import Html.App as App
-import Html.Attributes exposing (name, style, type')
-import Html.Events exposing (onClick)
-import Markdown
+import Html.Attributes exposing (name, style, type', placeholder)
+import Html.Events exposing (onClick, onInput)
 
 
 main =
-  App.beginnerProgram { model = chapter1, update = update, view = view }
+  App.beginnerProgram { model = model, update = update, view = view }
 
 
 -- MODEL
@@ -65,51 +64,119 @@ type alias Account = {
   initialValue : Float,
   incomeEvents : List IncomeEvent }
 
-type alias Model = {
-  accounts : List Account }
+type alias Model = List Account
 
-type UpdateAccountMsg = {
-  name : String,
-  initialValue : Float,
-  incomeEventName: Maybe IncomeEvent }
+type alias UpdateAccountMsg = {
+  oldName : String,
+  newName : String,
+  initialValue : Float }
 
-type Msg = UpdateAccountMsg
+type alias UpdateIncomeEventMsg = {
+  accountName : String,
+  oldName : String,
+  newName : String,
+  change : Int }
+
+type alias NewEventMsg = String
+
+type alias DeleteAccountMsg = String
+
+type alias DeleteIncomeEventMsg = {
+  accountName : String,
+  eventName : String }
+
+type Msg =
+  UpdateAccountMsg
+  | UpdateIncomeEventMsg
+  | NewAccountMsg
+  | NewEventMsg
+  | DeleteAccountMsg
+  | DeleteIncomeEventMsg
 
 model : Model
 model = Model [Account "" 0 [IncomeEvent "" 0]]
 
 
 -- UPDATE
-hasName : a -> String -> Bool
-hasName name { otherName } = name == otherName
+-- TODO: the update events are now much simpler and should be broken down accordingly
+addEvent : List Account -> String -> List Account
+addEvent accounts accountName =
+  List.map (\account -> if account.name == accountName
+                        then { account | incomeEvents = List.append account.incomeEvents [IncomeEvent "" 0]}
+                        else account) accounts
 
-containsItemWithName : List a -> String -> Bool
-containsItemWithName list name =
-  List.any (\{ otherName } -> name == otherName)
+updateAccount : List Account -> UpdateAccountMsg -> List Account
+updateAccount accounts msg =
+  List.map (\account -> if account.name == msg.oldName
+                        then { account | name = msg.newName, initialValue = msg.initialValue}
+                        else account) accounts
+
+updateIncomeEventInAccount : Account -> UpdateIncomeEventMsg -> Account
+updateIncomeEventInAccount account msg =
+  { account | incomeEvents = List.map (\incomeEvent -> if incomeEvent.name == msg.oldName
+                                                       then IncomeEvent msg.name msg.change
+                                                       else incomeEvent) account.incomeEvents }
+
+updateIncomeEvent : List Account -> UpdateIncomeEventMsg -> List Account
+updateIncomeEvent accounts updateMsg =
+  List.map (\account -> if account.name == updateMsg.accountName
+                        then updateIncomeEventInAccount account updateMsg
+                        else account) accounts
 
 update : Msg -> Model -> Model
 update msg model =
   case msg of
-    IncomeEventMsg incomeEvent ->
-        { model | incomeEvents =
-            incomeEvent :: (List.filter (not hasName incomeEvent.name) model.incomeEvents) }
-    AccountMsg account ->
-        { model | accounts =
-            account :: (List.filter (not hasName account.name) model.accounts) }
+    UpdateAccountMsg updateMsg ->
+      updateAccount model updateMsg
+    UpdateIncomeEventMsg updateMsg ->
+      updateIncomeEvent model updateMsg
+    NewAccountMsg newAccount ->
+      List.append model [Account "" 0 [IncomeEvent "" 0]]
+    NewEventMsg accountName ->
+      addEvent model accountName
+    DeleteAccountMsg accountName ->
+      List.filter (\account -> account.name != accountName) msg
+    DeleteIncomeEventMsg deleteMsg ->
+      msg -- TODO: delete the income event
 
 
 -- VIEW
-inputIncomeEvents : List IncomeEvent -> List Account -> Html
-inputIncomeEvents events accounts=
-  List.map (\ie -> [ input [ type' "text", placeholder "Name", onInput TODO ] [],
-                     select [] (List.map (\account -> account.name) accounts),
-                     input [ type' "number", placeholder "Monthly change (flat)", onInput TODO ] [],
-                     input [ type' "number", placeholder "Monthly change (percentage)", onInput TODO ] [])
+incomeEventInputs : List IncomeEvent -> String -> Html
+incomeEventInputs incomeEvents accountName =
+  List.map (\ie ->
+    div []
+      [ input [ type' "text",
+                placeholder ie.name,
+                onInput (\newName -> UpdateIncomeEventMsg accountName ie.name newName ie.change) ]
+              []
+      , input [ type' "number",
+                placeholder ie.change,
+                onInput (\change -> UpdateIncomeEventMsg accountName ie.name ie.name change) ]
+              []
+      ]
+  )
+
+accountInputs : List Account -> Html
+accountInputs accounts =
+  List.map (\account ->
+    div []
+      [ input [ type' "text",
+                placeholder account.name,
+                onInput (\newName -> UpdateAccountMsg account.name newName account.initialValue) ]
+              []
+      , input [ type' "number",
+                placeholder account.initialValue,
+                onInput (\value -> UpdateAccountMsg account.name account.name value) ]
+              []
+      , incomeEventInputs account.incomeEvents account.name
+      ]
+  )
+
+-- TODO: function to compute graph based on current model! Hooray!
+-- TODO: delete buttons
+-- TODO: function to set + button displays based on the accounts and income events that require names
+        -- hover text could tell folks they need to input names
+
 view : Model -> Html Msg
 view model =
-  div [] (List.map (\ie -> input )
-    [ input [ type' "text", placeholder "Name", onInput Name ] []
-    , input [ type' "password", placeholder "Password", onInput Password ] []
-    , input [ type' "password", placeholder "Re-enter Password", onInput PasswordAgain ] []
-    , viewValidation model
-    ]
+  div [] [(List.map accountInputs model), model]
