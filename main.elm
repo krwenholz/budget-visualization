@@ -1,42 +1,4 @@
-{-
-def check_account_balance(amount, month):
-  if amount < 0:
-    raise Exception('We went negative at month_num [{}]'.format(month))
-
-def elapse_time(years, annual_rate_of_return, amount_to_invest, amount_to_vacation):
-  table = [('month/year', 'extra', 'investments', 'vacations')]
-  investments = 0
-  vacations = 0
-  extra = 0
-  for month_num in range(years * 12):
-    month = month_num % 12
-    year = month_num // 12
-    for fn in income_and_expenses:
-      extra += fn(month, year)
-    check_account_balance(extra, month_num)
-
-    extra -= amount_to_invest
-    investments += amount_to_invest
-    investments += (investments * (annual_rate_of_return / 12))
-    check_account_balance(extra, month_num)
-
-    extra -= amount_to_vacation
-    vacations += amount_to_vacation
-    check_account_balance(extra, month_num)
-
-    table.append((str(month+1)+'/'+str(year), extra, investments, vacations))
--}
-
 -- TODO: domain maybe moneymatters.xyz, dollas.xyz, moneystuff.xyz/
--- TODO: one type of income event:
-  -- constant: every month they do something to any number of accounts
-  -- this limits the focus to things we actually have control over on an every day basis
--- TODO: need some sort of UI and data structure for income rule, UI and terms are nice
-  -- [here](http://ux.stackexchange.com/questions/46318/logical-operator-icons)
--- TODO: income events live in currentAccount, take (month, year, masterAccount, currentAccount)
-  -- display them: maybe break them down to a dict or tuple expansion OR let people write several simple
-    -- logical operators to define them
-  -- maybe an income-event belongs in the account logic
 -- TODO: accounts need to interact with one another
   -- accounts contain their own income events that get to act on that account and the master account
   -- allow users to order the events/accounts
@@ -44,9 +6,9 @@ def elapse_time(years, annual_rate_of_return, amount_to_invest, amount_to_vacati
   -- would be nice to include optional horizontal bars for each event type, marking when important
     -- events happened
 
-import Html exposing (Html, Attribute, div, fieldset, input, label, text, ol, ul, li)
+import Html exposing (Html, Attribute, div, fieldset, input, label, text, ol, ul, li, button)
 import Html.App as App
-import Html.Attributes exposing (name, style, type', placeholder)
+import Html.Attributes exposing (name, style, type', placeholder, disabled)
 import Html.Events exposing (onClick, onInput)
 import String exposing (toFloat, toInt)
 
@@ -138,46 +100,53 @@ update msg model =
 
 
 -- VIEW
-incomeEventInputs : List IncomeEvent -> String -> Html Msg
-incomeEventInputs incomeEvents accountName =
-  ul [] (List.map (\ie ->
-    li []
-      [ input [ type' "text",
-                placeholder ie.name,
-                onInput (\newName -> UpdateIncomeEventMsg (UpdateIncomeEventDetails accountName
-                                                                                    ie.name
-                                                                                    newName
-                                                                                    ie.change)) ]
-              []
-      , input [ type' "number",
-                placeholder (toString ie.change),
-                onInput (\change -> UpdateIncomeEventMsg
-                                      (UpdateIncomeEventDetails accountName
-                                                                ie.name
-                                                                ie.name
-                                                                (Result.withDefault 0 (String.toInt change)))) ]
-              []
-      ]
-  ) incomeEvents)
+-- TODO: need to use a dictionary so these are stupid simple
+allNamed records = List.all (\{ name } -> name /= "") records
 
-accountInputs : List Account -> List (Html Msg)
-accountInputs accounts =
-  List.map (\account ->
-    div []
-      [ input [ type' "text", placeholder account.name,
-               onInput (\newName -> UpdateAccountMsg (UpdateAccountDetails account.name
-                                                         newName
-                                                         account.initialValue)) ]
-             []
-      , input [ type' "number", placeholder (toString account.initialValue),
-                onInput (\value -> UpdateAccountMsg
-                                     (UpdateAccountDetails account.name
-                                                           account.name
-                                                           (Result.withDefault 0 (String.toFloat value)))) ]
-              []
-      , (incomeEventInputs account.incomeEvents account.name)
-      ]
-  ) accounts
+buildIncomeEventInputs : List IncomeEvent -> String -> Html Msg
+buildIncomeEventInputs incomeEvents accountName =
+  ul [] (List.append
+      (List.map (\ie ->
+      li []
+        [ input [ type' "text",
+                  placeholder ie.name,
+                  onInput (\newName -> UpdateIncomeEventMsg (UpdateIncomeEventDetails accountName
+                                                                                      ie.name
+                                                                                      newName
+                                                                                      ie.change)) ]
+                []
+        , input [ type' "number",
+                  placeholder (toString ie.change),
+                  onInput (\change -> UpdateIncomeEventMsg
+                                        (UpdateIncomeEventDetails accountName
+                                                                  ie.name
+                                                                  ie.name
+                                                                  (Result.withDefault 0 (String.toInt change)))) ]
+                []
+        ]
+    ) incomeEvents)
+    [ button [ onClick NewAccountMsg, disabled (if not (allNamed incomeEvents) then True else False) ] [ text "+" ] ])
+
+buildAccountInputs : List Account -> List (Html Msg)
+buildAccountInputs accounts =
+  List.append
+    (List.map (\account ->
+      div []
+        [ input [ type' "text", placeholder account.name,
+                 onInput (\newName -> UpdateAccountMsg (UpdateAccountDetails account.name
+                                                           newName
+                                                           account.initialValue)) ]
+               []
+        , input [ type' "number", placeholder (toString account.initialValue),
+                  onInput (\value -> UpdateAccountMsg
+                                       (UpdateAccountDetails account.name
+                                                             account.name
+                                                             (Result.withDefault 0 (String.toFloat value)))) ]
+                []
+        , buildIncomeEventInputs account.incomeEvents account.name
+        ]
+    ) accounts)
+    [ button [ onClick NewAccountMsg, disabled (if not (allNamed accounts) then True else False) ] [ text "+" ] ]
 
 -- TODO: function to compute graph based on current model! Hooray!
 -- TODO: delete buttons
@@ -193,4 +162,4 @@ showModel model =
 
 view : Model -> Html Msg
 view model =
-  div [] [div [] (accountInputs model), div [] [showModel model]]
+  div [] [div [] (buildAccountInputs model), div [] [showModel model]]
