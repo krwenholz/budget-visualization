@@ -127,12 +127,12 @@ update msg model =
 buildIncomeEventInputs : Array IncomeEvent -> Int -> Html Msg
 buildIncomeEventInputs incomeEvents accountNum =
   ul [] (List.append (Array.toList
-      (Array.indexedMap (\index ie ->
+      (Array.indexedMap (\eventNum ie ->
         li []
           [ input [ type_ "text",
                     placeholder ie.name,
                     onInput (\newName -> UpdateIncomeEventMsg (UpdateIncomeEventDetails accountNum
-                                                                                        index
+                                                                                        eventNum
                                                                                         newName
                                                                                         ie.change)) ]
                   []
@@ -140,10 +140,11 @@ buildIncomeEventInputs incomeEvents accountNum =
                     placeholder (toString ie.change),
                     onInput (\change -> UpdateIncomeEventMsg
                                           (UpdateIncomeEventDetails accountNum
-                                                                    index
+                                                                    eventNum
                                                                     ie.name
                                                                     (Result.withDefault 0 (String.toInt change)))) ]
                   []
+          , button [ onClick (DeleteIncomeEventMsg (DeleteIncomeEventDetails accountNum eventNum)) ] [ text "-" ]
           ]
       ) incomeEvents))
     [ button [ onClick (NewIncomeEventMsg accountNum) ] [ text "New income event" ] ])
@@ -151,20 +152,21 @@ buildIncomeEventInputs incomeEvents accountNum =
 buildAccountInputs : Array Account -> List (Html Msg)
 buildAccountInputs accounts =
   List.append (Array.toList
-    (Array.indexedMap (\index account ->
+    (Array.indexedMap (\accountNum account ->
       div []
         [ input [ type_ "text", placeholder account.name,
-                 onInput (\newName -> UpdateAccountMsg (UpdateAccountDetails index
+                 onInput (\newName -> UpdateAccountMsg (UpdateAccountDetails accountNum
                                                                              newName
                                                                              account.initialValue)) ]
                []
         , input [ type_ "number", placeholder (toString account.initialValue),
                   onInput (\value -> UpdateAccountMsg
-                                       (UpdateAccountDetails index
+                                       (UpdateAccountDetails accountNum
                                                              account.name
                                                              (Result.withDefault 0 (String.toFloat value)))) ]
                 []
-        , buildIncomeEventInputs account.incomeEvents index
+        , button [ onClick (DeleteAccountMsg accountNum) ] [ text "-" ]
+        , buildIncomeEventInputs account.incomeEvents accountNum
         ]
     ) accounts))
     [ button [ onClick NewAccountMsg ] [ text "New account" ] ]
