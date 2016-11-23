@@ -1,6 +1,3 @@
--- TODO: accounts need to interact with one another
-  -- accounts contain their own income events that get to act on that account and the master account
-  -- allow users to order the events/accounts
 -- TODO: pretty line graph of account balances (updates on new input, submit to start and focus based later)
   -- would be nice to include optional horizontal bars for each event type, marking when important
     -- events happened
@@ -152,38 +149,41 @@ buildIncomeEventInputs incomeEvents accountNum =
 buildAccountInputs : Array Account -> List (Html Msg)
 buildAccountInputs accounts =
   List.append (Array.toList
-    (Array.indexedMap (\accountNum account ->
+    <| Array.indexedMap (\accountNum account ->
       div []
         [ input [ type_ "text", placeholder account.name,
-                 onInput (\newName -> UpdateAccountMsg (UpdateAccountDetails accountNum
-                                                                             newName
-                                                                             account.initialValue)) ]
+                 onInput (\newName -> UpdateAccountMsg <| UpdateAccountDetails accountNum
+                                                                               newName
+                                                                               account.initialValue) ]
                []
         , input [ type_ "number", placeholder (toString account.initialValue),
                   onInput (\value -> UpdateAccountMsg
-                                       (UpdateAccountDetails accountNum
-                                                             account.name
-                                                             (Result.withDefault 0 (String.toFloat value)))) ]
+                                       <| UpdateAccountDetails accountNum
+                                                               account.name
+                                                               (Result.withDefault 0 <| String.toFloat value)) ]
                 []
         , button [ onClick (DeleteAccountMsg accountNum) ] [ text "-" ]
         , buildIncomeEventInputs account.incomeEvents accountNum
         ]
-    ) accounts))
+    ) accounts)
     [ button [ onClick NewAccountMsg ] [ text "New account" ] ]
-
--- TODO: function to compute graph based on current model! Hooray!
--- TODO: delete buttons
--- TODO: function to set + button displays based on the accounts and income events that require names
-        -- hover text could tell folks they need to input names
 
 showEvents events =
   Array.map (\ie -> li [] [text ("name: " ++ ie.name ++ " change: " ++ (toString ie.change))]) events
 
 showModel : Model -> Html a
 showModel model =
-  ol [] (Array.toList (Array.map (\account -> li [] [(text ("name: " ++ account.name  ++ " val: " ++ (toString account.initialValue))),
+  ol [] (Array.toList <| Array.map (\account -> li [] [(text ("name: " ++ account.name  ++ " val: " ++ (toString account.initialValue))),
                                                           ol [] (Array.toList (showEvents account.incomeEvents))])
-                                 model))
+                                 model)
+
+-- TODO: function to compute graph based on current model! Hooray!
+-- TODO: build a table first (that can always sit under the graph)
+        -- use Tables.colgroup after running a map over the accounts that
+        -- runs a 
+-- displayAccountsOverTime : Model -> Html a
+-- displayAccountsOverTime model =
+--   ol [] (Array.toList (Array.map )))
 
 view : Model -> Html Msg
 view model =
