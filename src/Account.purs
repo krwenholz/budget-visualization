@@ -1,106 +1,102 @@
 module App.Counter where
 
-import Prelude ((+), (-), const, show)
-import Pux.Html (Html, div, span, button, text)
-import Pux.Html.Events (onClick)
-import Data.Array (deleteAt, insertAt)
+import Prelude ((+), (-), const, show, map, ($))
+import Pux.Html (Html, div, span, button, text, input, li, ul)
+import Pux.Html.Events (onClick, onInput)
+import Pux.Html.Attributes (placeholder, type_)
+import Data.Array (deleteAt, modifyAt, mapWithIndex, (:))
 import Data.Maybe (fromMaybe)
+import Data.Int (fromString) as Int
 
 data Action
   = UpdateAccount { name :: String
-                  , initialValue :: Float }
+                  , initialValue :: Int }
   |UpdateIncomeEvent { eventNum :: Int
-                      , name :: String
-                      , change :: Int }
+                     , name :: String
+                     , change :: Int }
   | DeleteIncomeEvent Int
   | NewIncomeEvent
 
-type IncomeEvent = {
-  name :: String,
-  change :: Int }
+type IncomeEvent = { name :: String
+                   , change :: Int }
 
-initIncomeEvent :: IncomeEvent
-initIncomeEvent = { name: ""
-                 , change: 0 }
+updateIncomeEvent :: Int -> IncomeEvent -> Action
+updateIncomeEvent eventNum { name: name, change: change } =
+  UpdateIncomeEvent { eventNum: eventNum
+                    , name: name
+                    , change: change }
 
-type Account = {
-  name :: String,
-  initialValue :: Float,
-  incomeEvents :: Array IncomeEvent }
+emptyIncomeEvent :: IncomeEvent
+emptyIncomeEvent = { name: ""
+                  , change: 0 }
+
+type Account = { name :: String
+               , initialValue :: Int
+               , incomeEvents :: Array IncomeEvent }
 
 init :: Account
 init = { name: ""
        , initialValue: 0
-       , incomeEvents: [(initIncomeEvent)] }
+       , incomeEvents: [(emptyIncomeEvent)] }
 
 update :: Action -> Account -> Account
 update NewIncomeEvent account =
-  account { incomeEvents = (initIncomeEvent : account.incomeEvents) }
+  account { incomeEvents = (emptyIncomeEvent : account.incomeEvents) }
 update (UpdateAccount { name: name, initialValue: initialValue }) account =
   account { name = name, initialValue = initialValue }
-update (UpdateIncomeEvent { eventNum: eventNum, name: name, initialValue: initialValue }) account =
-  let
-    newIncomeEvent = { name: name, initialValue: initialValue }
-  in
-    account { incomeEvents = (fromMaybe account.incomeEvents
-                                        (modifyAt eventNum (\_ -> newEvent) account.incomeEvents)) }
+update (UpdateIncomeEvent { eventNum: eventNum, name: name, change: change}) account =
+  account { incomeEvents = (fromMaybe account.incomeEvents
+                                      (modifyAt eventNum (\_ -> emptyIncomeEvent) account.incomeEvents)) }
+  where
+    newIncomeEvent = { name: name, change: change}
 update (DeleteIncomeEvent eventNum) account =
   account { incomeEvents = (fromMaybe account.incomeEvents
                                       (deleteAt eventNum account.incomeEvents)) }
 
-view :: Account -> Html Action
--- TODO: make a single Account view that can dispatch to its own income events
-view state =
+incomeEventInput :: IncomeEvent -> Html IncomeEvent
+incomeEventInput incomeEvent =
   div
     []
-    [ button [ onClick (const Increment) ] [ text "Increment" ]
-    , span [] [ text (show state) ]
-    , button [ onClick (const Decrement) ] [ text "Decrement" ]
+    [ input [ type_ "text"
+            , placeholder incomeEvent.name
+            , onInput (\newName -> { name: newName.target.value, change: incomeEvent.change }) ]
+            []
+    , input [ type_ "number"
+            , placeholder $ show incomeEvent.change
+            , onInput (\change -> { name: incomeEvent.name
+                                  , change: (fromMaybe 0 $ Int.fromString change.target.value) }) ]
+            []
     ]
 
--- buildIncomeEventInputs : Array IncomeEvent -> Int -> Html Msg
--- buildIncomeEventInputs incomeEvents accountNum =
---   ul [] (List.append (Array.toList
---       (Array.indexedMap (\eventNum ie ->
---         li []
---           [ input [ type_ "text",
---                     placeholder ie.name,
---                     onInput (\newName -> UpdateIncomeEventMsg (UpdateIncomeEventDetails accountNum
---                                                                                         eventNum
---                                                                                         newName
---                                                                                         ie.change)) ]
---                   []
---           , input [ type_ "number",
---                     placeholder (toString ie.change),
---                     onInput (\change -> UpdateIncomeEventMsg
---                                           (UpdateIncomeEventDetails accountNum
---                                                                     eventNum
---                                                                     ie.name
---                                                                     (Result.withDefault 0 (String.toInt change)))) ]
---                   []
---           , button [ onClick (DeleteIncomeEventMsg (DeleteIncomeEventDetails accountNum eventNum)) ] [ text "-" ]
---           ]
---       ) incomeEvents))
---     [ button [ onClick (NewIncomeEventMsg accountNum) ] [ text "New income event" ] ])
--- 
--- buildAccountInputs : Array Account -> List (Html Msg)
--- buildAccountInputs accounts =
---   List.append (Array.toList
---     <| Array.indexedMap (\accountNum account ->
---       div []
---         [ input [ type_ "text", placeholder account.name,
---                  onInput (\newName -> UpdateAccountMsg <| UpdateAccountDetails accountNum
---                                                                                newName
---                                                                                account.initialValue) ]
---                []
---         , input [ type_ "number", placeholder (toString account.initialValue),
---                   onInput (\value -> UpdateAccountMsg
---                                        <| UpdateAccountDetails accountNum
---                                                                account.name
---                                                                (Result.withDefault 0 <| String.toFloat value)) ]
---                 []
---         , button [ onClick (DeleteAccountMsg accountNum) ] [ text "-" ]
---         , buildIncomeEventInputs account.incomeEvents accountNum
---         ]
---     ) accounts)
---     [ button [ onClick NewAccountMsg ] [ text "New account" ] ]
+incomeEventInputs :: Array IncomeEvent -> Html Action
+incomeEventInputs incomeEvents =
+  div
+    []
+    [ ul [] (mapWithIndex (\index incomeEvent ->
+                          li
+                            []
+                            [ map (updateIncomeEvent index) $ (incomeEventInput incomeEvent)
+                            , button [ onClick $ const $ DeleteIncomeEvent index ] [ text "-" ]
+                            ])
+                          incomeEvents)
+    , button [ onClick (const NewIncomeEvent) ] [ text "New income event" ]
+    ]
+
+accountInput :: Account -> Html Action
+accountInput account =
+  div
+    []
+    [ input [ type_ "text"
+            , placeholder account.name
+            , onInput (\newName -> UpdateAccount { name: newName.target.value
+                                                 , initialValue: account.initialValue })
+            ]
+            []
+    , input [ type_ "number"
+            , placeholder $ show account.initialValue
+            , onInput (\initialValue -> UpdateAccount { name: account.name
+                                                      , initialValue: fromMaybe 0 $ Int.fromString initialValue.target.value })
+            ]
+            []
+    , incomeEventInputs account.incomeEvents
+    ]
