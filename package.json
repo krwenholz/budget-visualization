@@ -1,13 +1,11 @@
 {
-  "name": "pux-starter-app",
-  "version": "9.0.0",
-  "description": "Starter Pux application using webpack with hot-reloading.",
-  "main": "support/index.js",
+  "name": "budget-visualization",
+  "version": "1.0.0",
+  "description": "TODO: describe me",
+  "main": "",
   "keywords": [
     "pux",
     "purescript-pux",
-    "boilerplate",
-    "starter-app"
   ],
   "scripts": {
     "postinstall": "bower cache clean && bower install",
@@ -20,12 +18,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/alexmingoia/pux-starter-app.git"
+    "url": "git://github.com/krwenholz/budget-visualization.git"
   },
-  "author": "Alexander C. Mingoia",
-  "license": "BSD-3-Clause",
+  "author": "Kyle Wenholz",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/alexmingoia/pux-starter-app/issues"
+    "url": "https://github.com/krwenholz/budget-visualization/issues"
   },
   "dependencies": {
     "bower": "^1.7.9",
