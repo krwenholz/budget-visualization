@@ -2,10 +2,12 @@
   "name": "budget-visualization",
   "version": "1.0.0",
   "description": "TODO: describe me",
-  "main": "",
+  "main": "support/index.js",
   "keywords": [
     "pux",
     "purescript-pux",
+    "budget",
+    "visualization"
   ],
   "scripts": {
     "postinstall": "bower cache clean && bower install",
