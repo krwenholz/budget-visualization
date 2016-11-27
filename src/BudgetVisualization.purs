@@ -22,11 +22,9 @@ init = [ (Account.init) ]
 
 update :: Action -> State -> State
 update (UpdateAccount { accountNum: accountNum, update: update }) accounts =
-  fromMaybe account.incomeEvents $ modifyAt eventNum
-                                            (\account -> Account.update update account)
-                                            accounts
+  fromMaybe accounts $ modifyAt accountNum (\account -> Account.update update account) accounts
 update (DeleteAccount accountNum) accounts =
-  fromMaybe account.incomeEvents $ deleteAt accountNum accounts
+  fromMaybe accounts $ deleteAt accountNum accounts
 update NewAccount accounts =
   accounts `snoc` Account.init
 
@@ -40,7 +38,7 @@ view accounts =
                             [ map (\update -> UpdateAccount { accountNum: index
                                                             , update: update })
                                   $ (Account.view account)
-                            , button [ onClick $ const $ DeleteAccount index ] [ text "-" ]
+                            , button [ onClick $ const $ DeleteAccount index ] [ text "Delete account" ]
                             ])
                           accounts)
     , button [ onClick (const NewAccount) ] [ text "New account" ]

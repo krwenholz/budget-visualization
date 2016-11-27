@@ -4,7 +4,7 @@ import App.BudgetVisualization as BudgetVisualization
 import App.NotFound as NotFound
 import App.Routes (Route(Home, NotFound))
 import Prelude (($), map)
-import Pux.Html (Html, div, h1, p, text)
+import Pux.Html (Html, div, h1, text)
 
 data Action
   = Child (BudgetVisualization.Action)
@@ -27,8 +27,7 @@ view :: State -> Html Action
 view state =
   div
     []
-    [ h1 [] [ text "Pux Starter App" ]
-    , p [] [ text "Change src/Layout.purs and watch me hot-reload." ]
+    [ h1 [] [ text "Budget Visualization" ]
     , case state.route of
         Home -> map Child $ BudgetVisualization.view state.count
         NotFound -> NotFound.view state
