@@ -1,6 +1,6 @@
 module Main where
 
-import App.Counter (update, accountInput, init)
+import App.Account (update, accountInput, init)
 import Control.Monad.Eff (Eff)
 import Prelude (bind, Unit)
 import Pux (start, fromSimple, renderToDOM, CoreEffects)

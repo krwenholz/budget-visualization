@@ -1,4 +1,4 @@
-module App.Counter where
+module App.Account where
 
 import Prelude ((+), (-), const, show, map, ($))
 import Pux.Html (Html, div, span, button, text, input, li, ul)
