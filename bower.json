@@ -1,12 +1,12 @@
 {
-  "name": "pux-starter-app",
-  "homepage": "https://github.com/alexmingoia/pux-starter-app",
+  "name": "budget-visualization",
+  "homepage": "https://github.com/krwenholz/budget-visualization",
   "authors": [
-    "Alex Mingoia <talk@alexmingoia.com>"
+    "Kyle R. Wenholz"
   ],
-  "description": "Starter Pux application using webpack with hot-reloading.",
+  "description": "TODO: describe me",
   "main": "support/index.js",
-  "license": "BSD3",
+  "license": "MIT",
   "dependencies": {
     "purescript-pux": "^7.0.0",
     "purescript-pux-devtool": "^4.1.0",

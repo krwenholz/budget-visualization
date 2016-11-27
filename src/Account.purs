@@ -1,10 +1,10 @@
 module App.Account where
 
-import Prelude ((+), (-), const, show, map, ($))
+import Prelude (const, show, map, ($))
 import Pux.Html (Html, div, span, button, text, input, li, ul)
 import Pux.Html.Events (onClick, onInput)
 import Pux.Html.Attributes (placeholder, type_)
-import Data.Array (deleteAt, modifyAt, mapWithIndex, (:))
+import Data.Array (deleteAt, modifyAt, mapWithIndex, snoc)
 import Data.Maybe (fromMaybe)
 import Data.Int (fromString) as Int
 
@@ -30,23 +30,23 @@ emptyIncomeEvent :: IncomeEvent
 emptyIncomeEvent = { name: ""
                   , change: 0 }
 
-type Account = { name :: String
+type State = { name :: String
                , initialValue :: Int
                , incomeEvents :: Array IncomeEvent }
 
-init :: Account
+init :: State
 init = { name: ""
        , initialValue: 0
        , incomeEvents: [(emptyIncomeEvent)] }
 
-update :: Action -> Account -> Account
+update :: Action -> State -> State
 update NewIncomeEvent account =
-  account { incomeEvents = (emptyIncomeEvent : account.incomeEvents) }
+  account { incomeEvents = account.incomeEvents `snoc` emptyIncomeEvent }
 update (UpdateAccount { name: name, initialValue: initialValue }) account =
   account { name = name, initialValue = initialValue }
 update (UpdateIncomeEvent { eventNum: eventNum, name: name, change: change}) account =
   account { incomeEvents = (fromMaybe account.incomeEvents
-                                      (modifyAt eventNum (\_ -> emptyIncomeEvent) account.incomeEvents)) }
+                                      (modifyAt eventNum (\_ -> newIncomeEvent) account.incomeEvents)) }
   where
     newIncomeEvent = { name: name, change: change}
 update (DeleteIncomeEvent eventNum) account =
@@ -82,8 +82,8 @@ incomeEventInputs incomeEvents =
     , button [ onClick (const NewIncomeEvent) ] [ text "New income event" ]
     ]
 
-accountInput :: Account -> Html Action
-accountInput account =
+view :: State -> Html Action
+view account =
   div
     []
     [ input [ type_ "text"
