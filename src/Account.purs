@@ -31,8 +31,8 @@ emptyIncomeEvent = { name: ""
                   , change: 0 }
 
 type State = { name :: String
-               , initialValue :: Int
-               , incomeEvents :: Array IncomeEvent }
+             , initialValue :: Int
+             , incomeEvents :: Array IncomeEvent }
 
 init :: State
 init = { name: ""
