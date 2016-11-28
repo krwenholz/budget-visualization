@@ -8,6 +8,8 @@ import Data.Array (deleteAt, modifyAt, mapWithIndex, snoc)
 import Data.Maybe (fromMaybe)
 import Data.Int (fromString) as Int
 
+-- TODO: build my own parser for Numbers or upgrade the simple-parser library
+-- TODO: turn Ints into Numbers
 data Action
   = UpdateAccount { name :: String
                   , initialValue :: Int }

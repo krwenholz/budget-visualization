@@ -42,5 +42,6 @@ view accounts =
                             ])
                           accounts)
     , button [ onClick (const NewAccount) ] [ text "New account" ]
+    , text "TODO: A really cool graph should go right here."
     ]
 
