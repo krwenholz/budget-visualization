@@ -1,13 +1,13 @@
 module App.Account where
 
-import Prelude (const, show, map, ($), id)
+import Prelude (const, show, map, ($), id, (#))
 import Pux.Html (Html, div, span, button, text, input, li, ul)
 import Pux.Html.Events (onClick, onInput)
 import Pux.Html.Attributes (placeholder, type_)
 import Data.Array (deleteAt, modifyAt, mapWithIndex, snoc)
 import Data.Maybe (fromMaybe)
 import Data.Either (either)
-import Global (readFloat)
+import Global (isNaN, readFloat)
 
 data Action
   = UpdateAccount { name :: String
@@ -54,6 +54,12 @@ update (DeleteIncomeEvent eventNum) account =
   account { incomeEvents = (fromMaybe account.incomeEvents
                                       (deleteAt eventNum account.incomeEvents)) }
 
+readNumber :: String -> Number
+readNumber numberText =
+  if maybeNumber # isNaN then 0.0 else maybeNumber
+  where
+    maybeNumber = readFloat numberText
+
 incomeEventInput :: IncomeEvent -> Html IncomeEvent
 incomeEventInput incomeEvent =
   div
@@ -65,7 +71,7 @@ incomeEventInput incomeEvent =
     , input [ type_ "number"
             , placeholder $ show incomeEvent.change
             , onInput (\change -> { name: incomeEvent.name
-                                  , change: (readFloat change.target.value) }) ]
+                                  , change: (readNumber change.target.value) }) ]
             []
     ]
 
@@ -96,7 +102,7 @@ view account =
     , input [ type_ "number"
             , placeholder $ show account.initialValue
             , onInput (\initialValue -> UpdateAccount { name: account.name
-                                                      , initialValue: readFloat initialValue.target.value })
+                                                      , initialValue: readNumber initialValue.target.value })
             ]
             []
     , incomeEventInputs account.incomeEvents
