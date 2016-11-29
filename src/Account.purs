@@ -1,26 +1,25 @@
 module App.Account where
 
-import Prelude (const, show, map, ($))
+import Prelude (const, show, map, ($), id)
 import Pux.Html (Html, div, span, button, text, input, li, ul)
 import Pux.Html.Events (onClick, onInput)
 import Pux.Html.Attributes (placeholder, type_)
 import Data.Array (deleteAt, modifyAt, mapWithIndex, snoc)
 import Data.Maybe (fromMaybe)
-import Data.Int (fromString) as Int
+import Data.Either (either)
+import Gloabl (readFloat)
 
--- TODO: build my own parser for Numbers or upgrade the simple-parser library
--- TODO: turn Ints into Numbers
 data Action
   = UpdateAccount { name :: String
-                  , initialValue :: Int }
+                  , initialValue :: Number }
   |UpdateIncomeEvent { eventNum :: Int
                      , name :: String
-                     , change :: Int }
+                     , change :: Number }
   | DeleteIncomeEvent Int
   | NewIncomeEvent
 
 type IncomeEvent = { name :: String
-                   , change :: Int }
+                   , change :: Number }
 
 updateIncomeEvent :: Int -> IncomeEvent -> Action
 updateIncomeEvent eventNum { name: name, change: change } =
@@ -30,15 +29,15 @@ updateIncomeEvent eventNum { name: name, change: change } =
 
 emptyIncomeEvent :: IncomeEvent
 emptyIncomeEvent = { name: ""
-                  , change: 0 }
+                  , change: 0.0 }
 
 type State = { name :: String
-             , initialValue :: Int
+             , initialValue :: Number
              , incomeEvents :: Array IncomeEvent }
 
 init :: State
 init = { name: ""
-       , initialValue: 0
+       , initialValue: 0.0
        , incomeEvents: [(emptyIncomeEvent)] }
 
 update :: Action -> State -> State
@@ -66,7 +65,7 @@ incomeEventInput incomeEvent =
     , input [ type_ "number"
             , placeholder $ show incomeEvent.change
             , onInput (\change -> { name: incomeEvent.name
-                                  , change: (fromMaybe 0 $ Int.fromString change.target.value) }) ]
+                                  , change: (readFloat change.target.value) }) ]
             []
     ]
 
@@ -97,7 +96,7 @@ view account =
     , input [ type_ "number"
             , placeholder $ show account.initialValue
             , onInput (\initialValue -> UpdateAccount { name: account.name
-                                                      , initialValue: fromMaybe 0 $ Int.fromString initialValue.target.value })
+                                                      , initialValue: readFloat initialValue.target.value })
             ]
             []
     , incomeEventInputs account.incomeEvents
