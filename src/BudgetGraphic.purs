@@ -9,6 +9,5 @@ import Data.Maybe (fromMaybe)
 import Data.Int (fromString) as Int
 import App.Account as Account
 
--- TODO: turn ints into Numbers
 -- TODO: Run a simulation based on X number of years
 -- TODO: graph it with D3
