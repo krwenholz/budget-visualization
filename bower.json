@@ -9,7 +9,7 @@
   "license": "MIT",
   "dependencies": {
     "purescript-pux": "^7.0.0",
-    "purescript-pux-devtool": "^4.1.0",
+    "purescript-pux-devtool": "^4.1.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^2.0.0"
