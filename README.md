@@ -6,3 +6,10 @@ Goals:
 * Enable flat and percentage based monthly account adjustments.
 * Work for non-programmers. (The v1 python script didn't.)
 * Be shareable.
+
+# Getting started
+
+  npm install
+  npm start
+
+Head to localhost:3000 and witness the magic.
