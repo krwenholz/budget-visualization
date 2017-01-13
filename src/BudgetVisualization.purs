@@ -8,6 +8,7 @@ import Data.Array (deleteAt, modifyAt, mapWithIndex, snoc)
 import Data.Maybe (fromMaybe)
 import Data.Int (fromString) as Int
 import App.Account as Account
+import App.BudgetGraphic as BudgetGraphic
 
 data Action
   = UpdateAccount { accountNum :: Int
@@ -42,6 +43,6 @@ view accounts =
                             ])
                           accounts)
     , button [ onClick (const NewAccount) ] [ text "New account" ]
-    , text "TODO: A really cool graph should go right here."
+    , BudgetGraphic.view 1
     ]
 
