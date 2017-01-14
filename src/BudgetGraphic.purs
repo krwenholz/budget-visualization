@@ -20,7 +20,9 @@ view lines =
     []
     [ canvas [ id_ "visualization", width "400", height "400" ] []
     , script [] [ text $ """
+             var Chart = require('chart.js');
              var ctx = document.getElementById("visualization");
+             console.log("\n\n\n\n\nXXXXXXXXXXXXXXXXXXXXXX\n\n\n\n\n\n\n\n");
 						 var myChart = new Chart(ctx, {
 						     type: 'bar',
 						     data: {
