@@ -6,7 +6,6 @@ import Pux.Html.Events (onClick, onInput)
 import Pux.Html.Attributes (placeholder, type_)
 import Data.Array (deleteAt, modifyAt, mapWithIndex, snoc)
 import Data.Maybe (fromMaybe)
-import Data.Either (either)
 import Global (isNaN, readFloat)
 
 data Action
