@@ -16,9 +16,8 @@ type State = Int -- TODO: define the line input (probably an array or list of th
 -- TODO: Run a simulation based on X number of years
 -- TODO: graph it with D3
 view :: forall t1 t2. t1 -> Html t2
-view lines =
+view lines = do
+  ChartJs.drawChart "XXXXXXXXXXXXXXXXXXX" "---------------------"
   div
     []
-    [ canvas [ id_ "visualization", width "400", height "400" ] []
-    , ChartJs.drawChart "XXXXXXXXXXXXXXXXXXX"
-    ]
+    [ canvas [ id_ "visualization", width "400", height "400" ] [] ]
