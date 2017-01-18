@@ -1,10 +1,10 @@
 module BudgetVisualization exposing (..)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
-import Array exposing (..)
-import List exposing (..)
+import Html exposing (Html, text, div, input, ul, li, button)
+import Html.Attributes exposing (placeholder, type_, id, width, height)
+import Html.Events exposing (onInput, onClick)
+import Array exposing (Array, map, indexedMap, push, set, get)
+import DataStructureHelp exposing (removeFromArray)
 import BudgetGraphic
 import Account
 
@@ -27,26 +27,29 @@ update : Action -> State -> State
 update action accounts =
   case action of
     UpdateAccount { accountNum, update } ->
-      fromMaybe accounts $ modifyAt accountNum (\account -> Account.update update account) accounts
+      let
+          account = get accountNum accounts
+      in
+          set accountNum (Account.update update account) accounts
     DeleteAccount accountNum ->
-      fromMaybe accounts $ deleteAt accountNum accounts
+      removeFromArray accountNum accounts
     NewAccount ->
-      accounts push Account.init
+      push Account.init accounts
 
 view : State -> Html Action
 view accounts =
   div
     []
-    [ ul [] (mapWithIndex (\index account ->
+    [ ul [] (indexedMap (\index account ->
                           li
                             []
                             [ map (\update -> UpdateAccount { accountNum = index
                                                             , update = update })
-                                  $ (Account.view account)
-                            , button [ onClick $ const $ DeleteAccount index ] [ text "Delete account" ]
+                                  <| (Account.view account)
+                            , button [ onClick  (DeleteAccount index) ] [ text "Delete account" ]
                             ])
                           accounts)
-    , button [ onClick (const NewAccount) ] [ text "New account" ]
+    , button [ onClick NewAccount ] [ text "New account" ]
     , BudgetGraphic.view 1
     ]
 

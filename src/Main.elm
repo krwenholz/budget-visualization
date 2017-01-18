@@ -1,10 +1,6 @@
 module Main exposing (..)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
-import Array exposing (..)
-import List exposing (..)
+import Html exposing (Html)
 import BudgetVisualization
 
 main =

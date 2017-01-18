@@ -1,10 +1,11 @@
 module Account exposing (..)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
-import Array exposing (..)
-import List exposing (..)
+import Html exposing (Html, text, div, input, ul, li, button)
+import Html.Attributes exposing (placeholder, type_, id, width, height)
+import Html.Events exposing (onInput, onClick)
+import Array exposing (Array, map, indexedMap, push, set)
+import Result exposing (fromMaybe)
+import DataStructureHelp exposing (removeFromArray)
 
 type alias UpdateAccountMsg = { name : String
                               , initialValue : Float }
@@ -39,42 +40,45 @@ type alias State = { name : String
 init : State
 init = { name = ""
        , initialValue = 0.0
-       , incomeEvents = [(emptyIncomeEvent)] }
+       , incomeEvents = Array.fromList [(emptyIncomeEvent)] }
 
 update : Action -> State -> State
 update action account =
   case action of
     NewIncomeEvent ->
-      { account | incomeEvents = account.incomeEvents push emptyIncomeEvent }
+      { account | incomeEvents = push emptyIncomeEvent account.incomeEvents }
     UpdateAccount { name, initialValue } ->
       { account | name = name, initialValue = initialValue }
     UpdateIncomeEvent { eventNum, event } ->
-      { account | incomeEvents = (fromMaybe account.incomeEvents (modifyAt eventNum (const newIncomeEvent) account.incomeEvents)) }
+      { account | incomeEvents = set eventNum event account.incomeEvents }
     DeleteIncomeEvent eventNum ->
-      { account | incomeEvents = (fromMaybe account.incomeEvents (deleteAt eventNum account.incomeEvents)) }
+      { account | incomeEvents = removeFromArray eventNum account.incomeEvents }
 
-readFloat : String -> Number
+readFloat : String -> Float
 readFloat numberText =
   let
     maybeFloat = readFloat numberText
   in
-    if maybeFloat # isNaN then 0.0 else maybeNumber
+    if maybeFloat |> isNaN then 0.0 else maybeFloat
 
-incomeEventInput : IncomeEvent -> Html IncomeEvent
-incomeEventInput incomeEvent =
+incomeEventInput : IncomeEvent -> Int -> Html Action
+incomeEventInput incomeEvent index =
   div
     []
     [ input [ type_ "text"
             , placeholder incomeEvent.name
-            , onInput (\newName -> incomeEvent { name = newName.target.value }) ]
+            , onInput (\newName -> UpdateIncomeEvent <|
+                                   UpdateIncomeEventMsg index { incomeEvent | name = newName }) ]
             []
     , input [ type_ "number"
-            , placeholder $ show incomeEvent.flatChange
-            , onInput (\change -> incomeEvent { flatChange = readFloat change.target.value }) ]
+            , placeholder <| toString incomeEvent.flatChange
+            , onInput (\change -> UpdateIncomeEvent <|
+                                  UpdateIncomeEventMsg index { incomeEvent | flatChange = readFloat change }) ]
             []
     , input [ type_ "number"
-            , placeholder $ show incomeEvent.percentChange
-            , onInput (\change -> incomeEvent { percentChange = readFloat change.target.value }) ]
+            , placeholder <| toString incomeEvent.percentChange
+            , onInput (\change -> UpdateIncomeEvent <|
+                                  UpdateIncomeEventMsg index { incomeEvent | percentChange = readFloat change }) ]
             []
     ]
 
@@ -82,14 +86,14 @@ incomeEventInputs : Array IncomeEvent -> Html Action
 incomeEventInputs incomeEvents =
   div
     []
-    [ ul [] (mapWithIndex (\index incomeEvent ->
-                          li
-                            []
-                            [ map (updateIncomeEvent index) $ (incomeEventInput incomeEvent)
-                            , button [ onClick $ const $ DeleteIncomeEvent index ] [ text "-" ]
-                            ])
-                          incomeEvents)
-    , button [ onClick (const NewIncomeEvent) ] [ text "New income event" ]
+    [ ul [] (Array.toList <| indexedMap
+                             (\index incomeEvent ->
+                               li [] [ incomeEventInput incomeEvent index
+                                     , button [ onClick <| DeleteIncomeEvent index ]
+                                              [ text "-" ]
+                                     ])
+                incomeEvents)
+    , button [ onClick (NewIncomeEvent) ] [ text "New income event" ]
     ]
 
 view : State -> Html Action
@@ -98,14 +102,14 @@ view account =
     []
     [ input [ type_ "text"
             , placeholder account.name
-            , onInput (\newName -> UpdateAccount { name = newName.target.value
+            , onInput (\newName -> UpdateAccount { name = newName
                                                  , initialValue = account.initialValue })
             ]
             []
     , input [ type_ "number"
-            , placeholder $ show account.initialValue
+            , placeholder <| toString account.initialValue
             , onInput (\initialValue -> UpdateAccount { name = account.name
-                                                      , initialValue = readFloat initialValue.target.value })
+                                                      , initialValue = readFloat initialValue })
             ]
             []
     , incomeEventInputs account.incomeEvents
