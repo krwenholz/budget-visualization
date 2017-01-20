@@ -10,10 +10,10 @@ import Account
 
 type alias UpdateAcountMsg =
   { accountNum : Int
-  , update : Account.Action }
+  , update : Account.Msg }
 
 
-type Action =
+type Msg =
   UpdateAccount UpdateAcountMsg
   | DeleteAccount Int
   | NewAccount
@@ -23,7 +23,7 @@ type State = Array Account.State
 init : State
 init = [ (Account.init) ]
 
-update : Action -> State -> State
+update : Msg -> State -> State
 update action accounts =
   case action of
     UpdateAccount { accountNum, update } ->
@@ -36,18 +36,17 @@ update action accounts =
     NewAccount ->
       push Account.init accounts
 
-view : State -> Html Action
+view : State -> Html Msg
 view accounts =
   div
     []
-    [ ul [] (indexedMap (\index account ->
-                          li
-                            []
-                            [ map (\update -> UpdateAccount { accountNum = index
+    [ ul [] (Array.toList <| indexedMap
+                             (\index account -> li []
+                                [ div [] [ (\update -> UpdateAccount { accountNum = index
                                                             , update = update })
-                                  <| (Account.view account)
-                            , button [ onClick  (DeleteAccount index) ] [ text "Delete account" ]
-                            ])
+                                              <| Account.view account
+                                , button [ onClick  (DeleteAccount index) ] [ text "Delete account" ]
+                                ])
                           accounts)
     , button [ onClick NewAccount ] [ text "New account" ]
     , BudgetGraphic.view 1

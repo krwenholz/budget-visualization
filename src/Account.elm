@@ -13,7 +13,7 @@ type alias UpdateAccountMsg = { name : String
 type alias UpdateIncomeEventMsg = { eventNum : Int
                                   , event : IncomeEvent }
 
-type Action
+type Msg
   = UpdateAccount UpdateAccountMsg
   | UpdateIncomeEvent UpdateIncomeEventMsg
   | DeleteIncomeEvent Int
@@ -23,7 +23,7 @@ type alias IncomeEvent = { name : String
                          , flatChange : Float
                          , percentChange : Float }
 
-updateIncomeEvent : Int -> IncomeEvent -> Action
+updateIncomeEvent : Int -> IncomeEvent -> Msg
 updateIncomeEvent eventNum incomeEvent =
   UpdateIncomeEvent { eventNum = eventNum
                     , event = incomeEvent }
@@ -42,7 +42,7 @@ init = { name = ""
        , initialValue = 0.0
        , incomeEvents = Array.fromList [(emptyIncomeEvent)] }
 
-update : Action -> State -> State
+update : Msg -> State -> State
 update action account =
   case action of
     NewIncomeEvent ->
@@ -61,7 +61,7 @@ readFloat numberText =
   in
     if maybeFloat |> isNaN then 0.0 else maybeFloat
 
-incomeEventInput : IncomeEvent -> Int -> Html Action
+incomeEventInput : IncomeEvent -> Int -> Html Msg
 incomeEventInput incomeEvent index =
   div
     []
@@ -82,7 +82,7 @@ incomeEventInput incomeEvent index =
             []
     ]
 
-incomeEventInputs : Array IncomeEvent -> Html Action
+incomeEventInputs : Array IncomeEvent -> Html Msg
 incomeEventInputs incomeEvents =
   div
     []
@@ -96,7 +96,7 @@ incomeEventInputs incomeEvents =
     , button [ onClick (NewIncomeEvent) ] [ text "New income event" ]
     ]
 
-view : State -> Html Action
+view : State -> Html Msg
 view account =
   div
     []
