@@ -1,7 +1,7 @@
-module DataStructureHelp exposing (..)
+module DataStructureHelp exposing (removeFromList, removeFromArray)
 
-import Array exposing (..)
-import List exposing (..)
+import Array
+import List
 
 removeFromList i xs =
   (List.take i xs) ++ (List.drop (i+1) xs)

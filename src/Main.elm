@@ -8,4 +8,5 @@ main =
     { init = BudgetVisualization.init
     , view = BudgetVisualization.view
     , update = BudgetVisualization.update
+    , subscriptions = \_ -> Sub.none
     }
