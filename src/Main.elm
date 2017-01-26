@@ -62,5 +62,5 @@ view accounts =
     []
     [ accountsList accounts
     , button [ onClick NewAccount ] [ text "New account" ]
-    , BudgetGraphic.view 1
+    , BudgetGraphic.view accounts
     ]

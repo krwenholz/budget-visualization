@@ -1,4 +1,4 @@
-module Account exposing (Msg, State, init, update, view)
+module Account exposing (Msg, State, IncomeEvent, init, update, view)
 
 import Html exposing (Html, text, div, input, ul, li, button)
 import Html.Attributes exposing (placeholder, type_, id, width, height)
