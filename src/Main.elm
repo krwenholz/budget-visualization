@@ -36,9 +36,9 @@ update action accounts =
   case action of
     UpdateAccount { accountNum, update } ->
       let
-          account = get accountNum accounts |> withDefault Account.init
+        account = get accountNum accounts |> withDefault Account.init
       in
-          (set accountNum (Account.update update account) accounts, Cmd.none)
+        (set accountNum (Account.update update account) accounts, Cmd.none)
     DeleteAccount accountNum ->
       (removeFromArray accountNum accounts, Cmd.none)
     NewAccount ->

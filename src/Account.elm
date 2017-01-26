@@ -57,9 +57,11 @@ update action account =
 readFloat : String -> Float
 readFloat numberText =
   let
-    maybeFloat = readFloat numberText
+    maybeFloat = String.toFloat numberText
   in
-    if maybeFloat |> isNaN then 0.0 else maybeFloat
+    case maybeFloat of
+      Ok float -> float
+      Err msg -> 0.0
 
 incomeEventInput : IncomeEvent -> Int -> Html Msg
 incomeEventInput incomeEvent index =
