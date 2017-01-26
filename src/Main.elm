@@ -28,21 +28,21 @@ type Msg =
 
 type alias State = Array Account.State
 
-init : ( State, Cmd Msg )
-init = ( Array.fromList [ (Account.init) ], Cmd.none )
+init : (State, Cmd Msg)
+init = (Array.fromList [ (Account.init) ], Cmd.none)
 
-update : Msg -> State -> ( State, Cmd Msg )
+update : Msg -> State -> (State, Cmd Msg)
 update action accounts =
   case action of
     UpdateAccount { accountNum, update } ->
       let
           account = get accountNum accounts |> withDefault Account.init
       in
-          ( set accountNum (Account.update update account) accounts, Cmd.none )
+          (set accountNum (Account.update update account) accounts, Cmd.none)
     DeleteAccount accountNum ->
-      ( removeFromArray accountNum accounts, Cmd.none )
+      (removeFromArray accountNum accounts, Cmd.none)
     NewAccount ->
-      ( push Account.init accounts, Cmd.none )
+      (push Account.init accounts, Cmd.none)
 
 accountListItem : Int -> Account.State -> Html Msg
 accountListItem index account =
