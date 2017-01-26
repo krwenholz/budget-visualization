@@ -16,7 +16,7 @@ type alias State = List AccountTrend
 
 applyEvent : Float -> Account.IncomeEvent -> Float -> Float
 applyEvent initialValue { name, flatChange, percentChange } currentValue =
-  currentValue + (initialValue * percentChange) + flatChange
+  currentValue + (initialValue * (0.01 * percentChange)) + flatChange
 
 valueAfterEvents : Array Account.IncomeEvent -> Float -> Float
 valueAfterEvents incomeEvents initialValue =
