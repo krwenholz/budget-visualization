@@ -35,7 +35,8 @@ expandAccount maxMonth currentMonth initialValue incomeEvents =
 asData : Array Account.State -> State
 asData accounts =
   Array.toList <| map (\{ name, initialValue, incomeEvents } ->
-                        AccountTrend name (expandAccount 48 0 initialValue incomeEvents))
+                        -- TODO: months should be an input
+                        AccountTrend name (expandAccount 120 0 initialValue incomeEvents))
                         accounts
 
 showData : State -> Html msg
@@ -43,9 +44,7 @@ showData trends =
   ul [] (List.map (\{ name, trend }-> li [] [ text name
         , ul [] (List.map (\{ month, value }-> li [] [ text <| "month: " ++ (toString month) ++ " value: " ++ (toString value) ]) trend) ]) trends)
 
--- TODO: Run a simulation based on X number of years
 -- TODO: graph it with D3
--- TODO: fix signature
 -- view : Array Account.State -> Html
 view accounts =
   div

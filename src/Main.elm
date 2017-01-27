@@ -6,7 +6,7 @@ import Html.Attributes exposing (placeholder, type_, id, width, height)
 import Html.Events exposing (onInput, onClick)
 import Maybe exposing (withDefault)
 import DataStructureHelp exposing (removeFromArray)
-import BudgetGraphic
+import BudgetMath
 import Account
 
 main =
@@ -62,5 +62,5 @@ view accounts =
     []
     [ accountsList accounts
     , button [ onClick NewAccount ] [ text "New account" ]
-    , BudgetGraphic.view accounts
+    , BudgetMath.view accounts
     ]
