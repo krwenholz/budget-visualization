@@ -1,4 +1,4 @@
-module Account exposing (Msg, State, IncomeEvent, init, update, view)
+module Account exposing (Msg, Model, IncomeEvent, init, update, view)
 
 import Html exposing (Html, text, div, input, ul, li, button)
 import Html.Attributes exposing (placeholder, type_, id, width, height)
@@ -33,16 +33,16 @@ emptyIncomeEvent = { name = ""
                    , flatChange = 0.0
                    , percentChange = 0.0 }
 
-type alias State = { name : String
+type alias Model = { name : String
                    , initialValue : Float
                    , incomeEvents : Array IncomeEvent }
 
-init : State
+init : Model
 init = { name = ""
        , initialValue = 0.0
        , incomeEvents = Array.fromList [(emptyIncomeEvent)] }
 
-update : Msg -> State -> State
+update : Msg -> Model -> Model
 update action account =
   case action of
     NewIncomeEvent ->
@@ -98,7 +98,7 @@ incomeEventInputs incomeEvents =
     , button [ onClick (NewIncomeEvent) ] [ text "New income event" ]
     ]
 
-view : State -> Html Msg
+view : Model -> Html Msg
 view account =
   div
     []

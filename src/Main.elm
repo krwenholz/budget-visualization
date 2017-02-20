@@ -1,4 +1,4 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Array exposing (Array, map, indexedMap, push, set, get)
 import Html exposing (Html, text, div, input, ul, li, button)
@@ -26,37 +26,46 @@ type Msg =
   | DeleteAccount Int
   | NewAccount
 
-type alias State = Array Account.State
+type alias Model = Array Account.Model
 
-init : (State, Cmd Msg)
+init : (Model, Cmd Msg)
 init = (Array.fromList [ (Account.init) ], Cmd.none)
 
-update : Msg -> State -> (State, Cmd Msg)
-update action accounts =
+port exportBudget : BudgetMath.Model -> Cmd msg
+
+updateAccounts : Msg -> Model -> Model
+updateAccounts action accounts =
   case action of
     UpdateAccount { accountNum, update } ->
       let
         account = get accountNum accounts |> withDefault Account.init
       in
-        (set accountNum (Account.update update account) accounts, Cmd.none)
+        set accountNum (Account.update update account) accounts
     DeleteAccount accountNum ->
-      (removeFromArray accountNum accounts, Cmd.none)
+      removeFromArray accountNum accounts
     NewAccount ->
-      (push Account.init accounts, Cmd.none)
+      push Account.init accounts
 
-accountListItem : Int -> Account.State -> Html Msg
+update : Msg -> Model -> (Model, Cmd msg)
+update action accounts =
+  let
+     updatedModel = updateAccounts action accounts
+  in
+     (updatedModel, exportBudget (BudgetMath.asData updatedModel))
+
+accountListItem : Int -> Account.Model -> Html Msg
 accountListItem index account =
   li [] [ div [] [ Html.map (\update -> UpdateAccount { accountNum = index
                                                       , update = update })
                                                       <| Account.view account]
         , button [ onClick  (DeleteAccount index) ] [ text "Delete account" ]]
 
-accountsList : Array Account.State -> Html Msg
+accountsList : Array Account.Model -> Html Msg
 accountsList accounts =
   ul [] (Array.toList <| indexedMap (\index account -> accountListItem index account)
                                     accounts)
 
-view : State -> Html Msg
+view : Model -> Html Msg
 view accounts =
   div
     []

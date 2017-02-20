@@ -12,7 +12,7 @@ type alias Point = { month : Int, value : Float }
 type alias AccountTrend = { name : String
                           , trend : List Point }
 
-type alias State = List AccountTrend
+type alias Model = List AccountTrend
 
 applyEvent : Float -> Account.IncomeEvent -> Float -> Float
 applyEvent initialValue { name, flatChange, percentChange } currentValue =
@@ -32,19 +32,19 @@ expandAccount maxMonth currentMonth initialValue incomeEvents =
       { month = currentMonth
       , value = value } :: expandAccount maxMonth (currentMonth + 1) value incomeEvents
 
-asData : Array Account.State -> State
+asData : Array Account.Model -> Model
 asData accounts =
   Array.toList <| map (\{ name, initialValue, incomeEvents } ->
                         -- TODO: months should be an input
                         AccountTrend name (expandAccount 120 0 initialValue incomeEvents))
                         accounts
 
-showData : State -> Html msg
+showData : Model -> Html msg
 showData trends =
   ul [] (List.map (\{ name, trend }-> li [] [ text name
         , ul [] (List.map (\{ month, value }-> li [] [ text <| "month: " ++ (toString month) ++ " value: " ++ (toString value) ]) trend) ]) trends)
 
-view : Array Account.State -> Html msg
+view : Array Account.Model -> Html msg
 view accounts =
   div
     []
