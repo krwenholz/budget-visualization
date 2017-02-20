@@ -1,4 +1,4 @@
-module BudgetGraphic exposing (..)
+module BudgetMath exposing (..)
 
 import Html exposing (Html, text, div, input, ul, li, button, canvas)
 import Html.Attributes exposing (placeholder, type_, id, width, height)
@@ -44,8 +44,7 @@ showData trends =
   ul [] (List.map (\{ name, trend }-> li [] [ text name
         , ul [] (List.map (\{ month, value }-> li [] [ text <| "month: " ++ (toString month) ++ " value: " ++ (toString value) ]) trend) ]) trends)
 
--- TODO: graph it with D3
--- view : Array Account.State -> Html
+view : Array Account.State -> Html msg
 view accounts =
   div
     []
