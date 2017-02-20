@@ -1,4 +1,4 @@
-port module Main exposing (..)
+port module BudgetVisualization exposing (..)
 
 import Array exposing (Array, map, indexedMap, push, set, get)
 import Html exposing (Html, text, div, input, ul, li, button)

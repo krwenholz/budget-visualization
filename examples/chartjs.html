@@ -1,8 +1,9 @@
-<div id="budget"></div>
 <script src="../output/budget-visualization.js"></script>
-Check out the console
+<script src="../output/Chart.min.js"></script>
+<div id="budget-input"></div>
 <script>
-    var app = Elm.Budget.fullscreen();
+    var displayDiv = document.getElementById('budget-input')
+    var app = Elm.BudgetVisualization.embed(displayDiv);
 
     app.ports.exportExtrapolation.subscribe(function(extrapolation) {
       console.log(extrapolation);
