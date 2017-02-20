@@ -31,7 +31,7 @@ type alias Model = Array Account.Model
 init : (Model, Cmd Msg)
 init = (Array.fromList [ (Account.init) ], Cmd.none)
 
-port exportBudget : BudgetMath.Model -> Cmd msg
+port exportExtrapolation : BudgetMath.Model -> Cmd msg
 
 updateAccounts : Msg -> Model -> Model
 updateAccounts action accounts =
@@ -51,7 +51,7 @@ update action accounts =
   let
      updatedModel = updateAccounts action accounts
   in
-     (updatedModel, exportBudget (BudgetMath.asData updatedModel))
+     (updatedModel, exportExtrapolation (BudgetMath.asData updatedModel))
 
 accountListItem : Int -> Account.Model -> Html Msg
 accountListItem index account =

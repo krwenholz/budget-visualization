@@ -1,0 +1,9 @@
+<div id="budget"></div>
+<script src="budget.js"></script>
+<script>
+    var app = Elm.Budget.fullscreen();
+
+    app.ports.exportExtrapolation.subscribe(function(extrapolation) {
+      console.log(extrapolation);
+    });
+</script>
