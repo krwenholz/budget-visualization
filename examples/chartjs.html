@@ -37,16 +37,37 @@ app.ports.exportExtrapolation.subscribe(function(extrapolation) {
     type: 'line',
     data: extrapolation,
     options: {
+      title: {
+        display: true,
+        text: 'Account Value Predictions'
+      },
+      tooltips: {
+        mode: 'index'
+      },
+      hover: {
+        mode: 'index'
+      },
       scales: {
         xAxes: [{
+          display: true,
+          scaleLabel: {
+            display: true,
+            labelString: 'Month'
+          },
           ticks: {
             autoSkip: true,
             maxTicksLimit: 20
+          }
+        }],
+        yAxes: [{
+          display: true,
+          scaleLabel: {
+            display: true,
+            labelString: 'Dollars'
           }
         }]
       }
     }
   });
-  console.log(lineChart);
 });
 </script>
