@@ -4,6 +4,8 @@
 <canvas id="chart" width="400" height="300"></canvas>
 <script>
 function getColors() {
+  // Generate better colors
+  // http://stackoverflow.com/questions/309149/generate-distinctly-different-rgb-colors-in-graphs
   colors = [];
   for (var ii = 0; ii < 100; ii++) {
     var letters = '0123456789ABCDEF'.split('');
