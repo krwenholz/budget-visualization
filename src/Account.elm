@@ -38,8 +38,8 @@ type alias Model = { name : String
                    , incomeEvents : Array IncomeEvent }
 
 init : Model
-init = { name = ""
-       , initialValue = 0.0
+init = { name = "Example Account"
+       , initialValue = 10.0
        , incomeEvents = Array.fromList [(emptyIncomeEvent)] }
 
 update : Msg -> Model -> Model

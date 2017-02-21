@@ -71,5 +71,4 @@ view accounts =
     []
     [ accountsList accounts
     , button [ onClick NewAccount ] [ text "New account" ]
-    , BudgetMath.view accounts
     ]

@@ -1,11 +1,35 @@
 <script src="../output/budget-visualization.js"></script>
 <script src="../output/Chart.min.js"></script>
 <div id="budget-input"></div>
+<canvas id="chart" width="100" height="100"></canvas>
 <script>
-    var displayDiv = document.getElementById('budget-input')
-    var app = Elm.BudgetVisualization.embed(displayDiv);
+Chart.defaults.global.elements.line['fill'] = false;
+Chart.defaults.line.scales.xAxes.maxTicksLimit = 10;
+Chart.defaults.line.scales.xAxes.autoSkip = false;
+var canvas = document.getElementById('chart');
 
-    app.ports.exportExtrapolation.subscribe(function(extrapolation) {
-      console.log(extrapolation);
-    });
+var lineChart;
+
+var displayDiv = document.getElementById('budget-input')
+var app = Elm.BudgetVisualization.embed(displayDiv);
+
+app.ports.exportExtrapolation.subscribe(function(extrapolation) {
+  // TODO: should make smarter update logic here
+  extrapolation.datasets.forEach(function(item, index, array) {
+  });
+  lineChart = new Chart(canvas, {
+    type: 'line',
+    data: extrapolation,
+    options: {
+      scales: {
+        xAxes: [{
+          ticks: {
+            autoSkip: true,
+            maxTicksLimit: 20
+          }
+        }]
+      }
+    }
+  });
+});
 </script>
