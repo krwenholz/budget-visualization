@@ -4,16 +4,21 @@
 <canvas id="chart" width="400" height="300"></canvas>
 <script>
 function getColors() {
-  // Generate better colors
-  // http://stackoverflow.com/questions/309149/generate-distinctly-different-rgb-colors-in-graphs
+  setsOfSix = 3;
+  predefined = [ [0, 0, 255]
+               , [0, 255, 0]
+               , [255, 0, 0]
+               , [0, 255, 255]
+               , [255, 0, 255]
+               , [255, 255, 0] ];
   colors = [];
-  for (var ii = 0; ii < 100; ii++) {
-    var letters = '0123456789ABCDEF'.split('');
-    var color = '#';
-    for (var jj = 0; jj < 6; jj++ ) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    colors.push(color);
+  for (var ii = 1; ii <= setsOfSix; ii++) {
+    predefined.forEach(function(data, index, array) {
+      col1 = Math.ceil(data[0]/ii);
+      col2 = Math.ceil(data[1]/ii);
+      col3 = Math.ceil(data[2]/ii);
+      colors.push('rgb(' + col1 + ', ' + col2 + ', ' + col3 + ')');
+    });
   }
 
   return colors;

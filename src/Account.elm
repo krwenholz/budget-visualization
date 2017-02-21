@@ -1,6 +1,6 @@
 module Account exposing (Msg, Model, IncomeEvent, init, update, view)
 
-import Html exposing (Html, text, div, input, ul, li, button)
+import Html exposing (Html, text, div, input, ul, li, button, label)
 import Html.Attributes exposing (placeholder, type_, id, width, height)
 import Html.Events exposing (onInput, onClick)
 import Array exposing (Array, map, indexedMap, push, set)
@@ -67,21 +67,25 @@ incomeEventInput : IncomeEvent -> Int -> Html Msg
 incomeEventInput incomeEvent index =
   div
     []
-    [ input [ type_ "text"
-            , placeholder incomeEvent.name
-            , onInput (\newName -> UpdateIncomeEvent <|
-                                   UpdateIncomeEventMsg index { incomeEvent | name = newName }) ]
-            []
-    , input [ type_ "number"
-            , placeholder <| toString incomeEvent.flatChange
-            , onInput (\change -> UpdateIncomeEvent <|
-                                  UpdateIncomeEventMsg index { incomeEvent | flatChange = readFloat change }) ]
-            []
-    , input [ type_ "number"
-            , placeholder <| toString incomeEvent.percentChange
-            , onInput (\change -> UpdateIncomeEvent <|
-                                  UpdateIncomeEventMsg index { incomeEvent | percentChange = readFloat change }) ]
-            []
+    [ label [] [ text "Income Event: "
+               , input [ type_ "text"
+                       , placeholder incomeEvent.name
+                       , onInput (\newName -> UpdateIncomeEvent <|
+                                              UpdateIncomeEventMsg index { incomeEvent | name = newName })
+                       , id ("incomeEvent")]
+                       [] ]
+    , label [] [ text "Flat monthly change: "
+               , input [ type_ "number"
+                       , placeholder <| toString incomeEvent.flatChange
+                       , onInput (\change -> UpdateIncomeEvent <|
+                                             UpdateIncomeEventMsg index { incomeEvent | flatChange = readFloat change }) ]
+                       [] ]
+    , label [] [ text "Percent monthly change: "
+               , input [ type_ "number"
+                       , placeholder <| toString incomeEvent.percentChange
+                       , onInput (\change -> UpdateIncomeEvent <|
+                                             UpdateIncomeEventMsg index { incomeEvent | percentChange = readFloat change }) ]
+                       [] ]
     ]
 
 incomeEventInputs : Array IncomeEvent -> Html Msg
@@ -102,17 +106,19 @@ view : Model -> Html Msg
 view account =
   div
     []
-    [ input [ type_ "text"
-            , placeholder account.name
-            , onInput (\newName -> UpdateAccount { name = newName
-                                                 , initialValue = account.initialValue })
-            ]
-            []
-    , input [ type_ "number"
-            , placeholder <| toString account.initialValue
-            , onInput (\initialValue -> UpdateAccount { name = account.name
-                                                      , initialValue = readFloat initialValue })
-            ]
-            []
+    [ label [] [ text "Account: "
+               , input [ type_ "text"
+                       , placeholder account.name
+                       , onInput (\newName -> UpdateAccount { name = newName
+                                                            , initialValue = account.initialValue })
+                       ]
+                       [] ]
+    , label [] [ text "Starting amount: "
+               , input [ type_ "number"
+                       , placeholder <| toString account.initialValue
+                       , onInput (\initialValue -> UpdateAccount { name = account.name
+                                                                 , initialValue = readFloat initialValue })
+                       ]
+                       [] ]
     , incomeEventInputs account.incomeEvents
     ]
