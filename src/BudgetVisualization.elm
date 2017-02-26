@@ -9,6 +9,10 @@ import DataStructureHelp exposing (removeFromArray)
 import BudgetMath
 import Account
 
+-- TODO: Accordion the accounts
+-- TODO: call it "Percent yearly change"
+-- TODO: smaller graph, maybe zoomable
+
 main =
   Html.program
     { init = init

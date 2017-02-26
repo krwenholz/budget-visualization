@@ -4,7 +4,7 @@
 <canvas id="chart" width="400" height="300"></canvas>
 <script>
 function getColors() {
-  setsOfSix = 3;
+  setsOfSix = 10;
   predefined = [ [0, 0, 255]
                , [0, 255, 0]
                , [255, 0, 0]
@@ -34,7 +34,6 @@ var displayDiv = document.getElementById('budget-input')
 var app = Elm.BudgetVisualization.embed(displayDiv);
 
 app.ports.exportExtrapolation.subscribe(function(extrapolation) {
-  // TODO: should make smarter update logic here
   extrapolation.datasets.forEach(function(data, index, array) {
     data.backgroundColor = colors[index % colors.length];
     data.borderColor = colors[index % colors.length];
