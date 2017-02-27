@@ -9,70 +9,102 @@ import DataStructureHelp exposing (removeFromArray)
 import BudgetMath
 import Account
 
+
 -- TODO: Accordion the accounts
 -- TODO: call it "Percent yearly change"
 -- TODO: smaller graph, maybe zoomable
 
+
 main =
-  Html.program
-    { init = init
-    , view = view
-    , update = update
-    , subscriptions = \_ -> Sub.none
-    }
+    Html.program
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = \_ -> Sub.none
+        }
+
 
 type alias UpdateAcountMsg =
-  { accountNum : Int
-  , update : Account.Msg }
+    { accountNum : Int
+    , update : Account.Msg
+    }
 
-type Msg =
-  UpdateAccount UpdateAcountMsg
-  | DeleteAccount Int
-  | NewAccount
 
-type alias Model = Array Account.Model
+type Msg
+    = UpdateAccount UpdateAcountMsg
+    | DeleteAccount Int
+    | NewAccount
 
-init : (Model, Cmd Msg)
-init = (Array.fromList [ (Account.init) ], Cmd.none)
+
+type alias Model =
+    Array Account.Model
+
+
+init : ( Model, Cmd Msg )
+init =
+    ( Array.fromList [ (Account.init) ], Cmd.none )
+
 
 port exportExtrapolation : BudgetMath.Model -> Cmd msg
 
+
 updateAccounts : Msg -> Model -> Model
 updateAccounts action accounts =
-  case action of
-    UpdateAccount { accountNum, update } ->
-      let
-        account = get accountNum accounts |> withDefault Account.init
-      in
-        set accountNum (Account.update update account) accounts
-    DeleteAccount accountNum ->
-      removeFromArray accountNum accounts
-    NewAccount ->
-      push Account.init accounts
+    case action of
+        UpdateAccount { accountNum, update } ->
+            let
+                account =
+                    get accountNum accounts |> withDefault Account.init
+            in
+                set accountNum (Account.update update account) accounts
 
-update : Msg -> Model -> (Model, Cmd msg)
+        DeleteAccount accountNum ->
+            removeFromArray accountNum accounts
+
+        NewAccount ->
+            push Account.init accounts
+
+
+update : Msg -> Model -> ( Model, Cmd msg )
 update action accounts =
-  let
-     updatedModel = updateAccounts action accounts
-  in
-     (updatedModel, exportExtrapolation (BudgetMath.asData updatedModel))
+    let
+        updatedModel =
+            updateAccounts action accounts
+    in
+        ( updatedModel, exportExtrapolation (BudgetMath.asData updatedModel) )
+
 
 accountListItem : Int -> Account.Model -> Html Msg
 accountListItem index account =
-  li [] [ div [] [ Html.map (\update -> UpdateAccount { accountNum = index
-                                                      , update = update })
-                                                      <| Account.view account]
-        , button [ onClick  (DeleteAccount index) ] [ text "Delete account" ]]
+    li []
+        [ div []
+            [ Html.map
+                (\update ->
+                    UpdateAccount
+                        { accountNum = index
+                        , update = update
+                        }
+                )
+              <|
+                Account.view account
+            ]
+        , button [ onClick (DeleteAccount index) ] [ text "Delete account" ]
+        ]
+
 
 accountsList : Array Account.Model -> Html Msg
 accountsList accounts =
-  ul [] (Array.toList <| indexedMap (\index account -> accountListItem index account)
-                                    accounts)
+    ul []
+        (Array.toList <|
+            indexedMap (\index account -> accountListItem index account)
+                accounts
+        )
+
 
 view : Model -> Html Msg
 view accounts =
-  div
-    []
-    [ accountsList accounts
-    , button [ onClick NewAccount ] [ text "New account" ]
-    ]
+    div
+        []
+        [ accountsList accounts
+        , button [ onClick NewAccount ] [ text "New account" ]
+        ]
