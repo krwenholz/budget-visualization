@@ -127,7 +127,7 @@ incomeEventInput incomeEvent index =
                 []
             ]
         , label []
-            [ text "Percent monthly change: "
+            [ text "Percent yearly change: "
             , input
                 [ type_ "number"
                 , placeholder <| toString incomeEvent.percentChange
