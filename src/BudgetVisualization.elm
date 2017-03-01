@@ -11,6 +11,7 @@ import Account
 
 
 -- TODO: try to repro bug with account value 1 and percent change 1 -> 10 breaking graph
+-- TODO: keep state in sync with URL
 
 
 main =
