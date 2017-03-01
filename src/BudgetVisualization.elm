@@ -10,9 +10,10 @@ import BudgetMath
 import Account
 
 
--- TODO: Accordion the accounts
--- TODO: call it "Percent yearly change"
--- TODO: smaller graph, maybe zoomable
+-- TODO: Add a stylable class to all elements
+-- TODO: move buttons to simple +/- and use default text rather than labels
+--       where possible
+-- TODO: try to repro bug with account value 1 and percent change 1 -> 10 breaking graph
 
 
 main =
