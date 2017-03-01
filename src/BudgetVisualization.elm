@@ -2,7 +2,7 @@ port module BudgetVisualization exposing (..)
 
 import Array exposing (Array, map, indexedMap, push, set, get)
 import Html exposing (Html, text, div, input, ul, li, button)
-import Html.Attributes exposing (placeholder, type_, id, width, height)
+import Html.Attributes exposing (placeholder, type_, id, width, height, class)
 import Html.Events exposing (onInput, onClick)
 import Maybe exposing (withDefault)
 import DataStructureHelp exposing (removeFromArray)
@@ -10,9 +10,6 @@ import BudgetMath
 import Account
 
 
--- TODO: Add a stylable class to all elements
--- TODO: move buttons to simple +/- and use default text rather than labels
---       where possible
 -- TODO: try to repro bug with account value 1 and percent change 1 -> 10 breaking graph
 
 
@@ -79,7 +76,10 @@ accountListItem : Int -> Account.Model -> Html Msg
 accountListItem index account =
     li []
         [ div []
-            [ Html.map
+            [ button
+                [ onClick (DeleteAccount index) ]
+                [ text "-" ]
+            , Html.map
                 (\update ->
                     UpdateAccount
                         { accountNum = index
@@ -89,13 +89,12 @@ accountListItem index account =
               <|
                 Account.view account
             ]
-        , button [ onClick (DeleteAccount index) ] [ text "Delete account" ]
         ]
 
 
 accountsList : Array Account.Model -> Html Msg
 accountsList accounts =
-    ul []
+    ul [ class "accountList" ]
         (Array.toList <|
             indexedMap (\index account -> accountListItem index account)
                 accounts
@@ -107,5 +106,5 @@ view accounts =
     div
         []
         [ accountsList accounts
-        , button [ onClick NewAccount ] [ text "New account" ]
+        , button [ onClick NewAccount ] [ text "+" ]
         ]

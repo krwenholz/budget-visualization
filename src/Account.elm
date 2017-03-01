@@ -1,7 +1,7 @@
 module Account exposing (Msg, Model, IncomeEvent, init, update, view)
 
 import Html exposing (Html, text, div, input, ul, li, button, label)
-import Html.Attributes exposing (placeholder, type_, id, width, height)
+import Html.Attributes exposing (placeholder, type_, id, width, height, class)
 import Html.Events exposing (onInput, onClick)
 import Array exposing (Array, map, indexedMap, push, set)
 import Result exposing (fromMaybe)
@@ -44,7 +44,7 @@ updateIncomeEvent eventNum incomeEvent =
 
 emptyIncomeEvent : IncomeEvent
 emptyIncomeEvent =
-    { name = ""
+    { name = "Income Event"
     , flatChange = 0.0
     , percentChange = 0.0
     }
@@ -59,7 +59,7 @@ type alias Model =
 
 init : Model
 init =
-    { name = "Example Account"
+    { name = "Account Name"
     , initialValue = 10.0
     , incomeEvents = Array.fromList [ (emptyIncomeEvent) ]
     }
@@ -98,21 +98,20 @@ readFloat numberText =
 incomeEventInput : IncomeEvent -> Int -> Html Msg
 incomeEventInput incomeEvent index =
     div
-        []
-        [ label []
-            [ text "Income Event: "
-            , input
-                [ type_ "text"
-                , placeholder incomeEvent.name
-                , onInput
-                    (\newName ->
-                        UpdateIncomeEvent <|
-                            UpdateIncomeEventMsg index { incomeEvent | name = newName }
-                    )
-                , id ("incomeEvent")
-                ]
-                []
+        [ class "incomeEvent" ]
+        [ input
+            [ type_ "text"
+            , placeholder incomeEvent.name
+            , onInput
+                (\newName ->
+                    UpdateIncomeEvent <|
+                        UpdateIncomeEventMsg index { incomeEvent | name = newName }
+                )
+            , class "incomeEventName"
             ]
+            []
+        , button [ onClick <| DeleteIncomeEvent index ]
+            [ text "-" ]
         , label []
             [ text "Flat monthly change: "
             , input
@@ -123,6 +122,7 @@ incomeEventInput incomeEvent index =
                         UpdateIncomeEvent <|
                             UpdateIncomeEventMsg index { incomeEvent | flatChange = readFloat change }
                     )
+                , class "incomeEventFlatChange"
                 ]
                 []
             ]
@@ -136,6 +136,7 @@ incomeEventInput incomeEvent index =
                         UpdateIncomeEvent <|
                             UpdateIncomeEventMsg index { incomeEvent | percentChange = readFloat change }
                     )
+                , class "incomeEventPercentChange"
                 ]
                 []
             ]
@@ -151,38 +152,32 @@ incomeEventInputs incomeEvents =
                 indexedMap
                     (\index incomeEvent ->
                         li []
-                            [ incomeEventInput incomeEvent index
-                            , button [ onClick <| DeleteIncomeEvent index ]
-                                [ text "-" ]
-                            ]
+                            [ incomeEventInput incomeEvent index ]
                     )
                     incomeEvents
             )
-        , button [ onClick (NewIncomeEvent) ] [ text "New income event" ]
+        , button [ onClick (NewIncomeEvent) ] [ text "+" ]
         ]
 
 
 view : Model -> Html Msg
 view account =
-    div
-        []
-        [ label []
-            [ text "Account: "
-            , input
-                [ type_ "text"
-                , placeholder account.name
-                , onInput
-                    (\newName ->
-                        UpdateAccount
-                            { name = newName
-                            , initialValue = account.initialValue
-                            }
-                    )
-                ]
-                []
+    div [ class "account" ]
+        [ input
+            [ type_ "text"
+            , placeholder account.name
+            , onInput
+                (\newName ->
+                    UpdateAccount
+                        { name = newName
+                        , initialValue = account.initialValue
+                        }
+                )
+            , class "accountName"
             ]
+            []
         , label []
-            [ text "Starting amount: "
+            [ text "$"
             , input
                 [ type_ "number"
                 , placeholder <| toString account.initialValue
@@ -193,6 +188,7 @@ view account =
                             , initialValue = readFloat initialValue
                             }
                     )
+                , class "accountValue"
                 ]
                 []
             ]
