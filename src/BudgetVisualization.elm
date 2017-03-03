@@ -10,7 +10,7 @@ import Html.Events exposing (onInput, onClick)
 import Maybe exposing (withDefault)
 import Navigation exposing (Location)
 import RouteUrl exposing (App, UrlChange, RouteUrlProgram)
-import RouteUrl.Builder exposing (Builder, builder, path, replacePath, toUrlChange)
+import RouteUrl.Builder exposing (Builder, builder, path, replacePath, toUrlChange, insertQuery)
 
 
 -- TODO: keep state in sync with URL
@@ -124,9 +124,22 @@ delta2url : Model -> Model -> Maybe UrlChange
 delta2url previous current =
     Maybe.map toUrlChange <|
         (builder
-            |> replacePath [ toString current ]
-            |> Just
+            |> Array.foldl (\account queryString -> insertQuery toString current) Just current
         )
+
+
+
+-- TODO: use insertQuery to add each account
+-- TODO: use updateQuery on each account query entry to add append a list of income event infos
+
+
+singleAccountQueryString : Account.Model -> Builder
+singleAccountQueryString account =
+    insertQuery account.name
+
+
+
+-- TODO: use query function to grab the query dict and then map over accounts
 
 
 location2messages : Location -> List Msg
