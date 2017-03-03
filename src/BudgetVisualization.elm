@@ -1,25 +1,30 @@
 port module BudgetVisualization exposing (..)
 
+import Account
 import Array exposing (Array, map, indexedMap, push, set, get)
+import BudgetMath
+import DataStructureHelp exposing (removeFromArray)
 import Html exposing (Html, text, div, input, ul, li, button)
 import Html.Attributes exposing (placeholder, type_, id, width, height, class)
 import Html.Events exposing (onInput, onClick)
 import Maybe exposing (withDefault)
-import DataStructureHelp exposing (removeFromArray)
-import BudgetMath
-import Account
+import Navigation exposing (Location)
+import RouteUrl exposing (App, UrlChange, RouteUrlProgram)
+import RouteUrl.Builder exposing (Builder, builder, path, replacePath, toUrlChange)
 
 
--- TODO: try to repro bug with account value 1 and percent change 1 -> 10 breaking graph
 -- TODO: keep state in sync with URL
 
 
+main : RouteUrlProgram Never Model Msg
 main =
-    Html.program
-        { init = init
-        , view = view
+    RouteUrl.program
+        { delta2url = delta2url
+        , location2messages = location2messages
+        , init = init
         , update = update
         , subscriptions = \_ -> Sub.none
+        , view = view
         }
 
 
@@ -109,3 +114,38 @@ view accounts =
         [ accountsList accounts
         , button [ onClick NewAccount ] [ text "+" ]
         ]
+
+
+
+-- Routing
+
+
+delta2url : Model -> Model -> Maybe UrlChange
+delta2url previous current =
+    Maybe.map toUrlChange <|
+        (builder
+            |> replacePath [ toString current ]
+            |> Just
+        )
+
+
+location2messages : Location -> List Msg
+location2messages location =
+    []
+
+
+
+--     case path builder of
+--         first :: rest ->
+--             case toInt first of
+--                 Ok value ->
+--                     [ Set value ]
+--
+--                 Err _ ->
+--                     -- If it wasn't an integer, then no action ... we could
+--                     -- show an error instead, of course.
+--                     []
+--
+--         _ ->
+--             -- If nothing provided for this part of the URL, return empty list
+--             []
