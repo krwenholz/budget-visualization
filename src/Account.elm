@@ -8,6 +8,9 @@ import Result exposing (fromMaybe)
 import DataStructureHelp exposing (removeFromArray)
 
 
+-- TODO: protect against bad inputs (characters which might conflict with URL)
+
+
 type alias UpdateAccountMsg =
     { name : String
     , initialValue : Float

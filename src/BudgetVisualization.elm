@@ -10,10 +10,10 @@ import Html.Events exposing (onInput, onClick)
 import Maybe exposing (withDefault)
 import Navigation exposing (Location)
 import RouteUrl exposing (App, UrlChange, RouteUrlProgram)
-import RouteUrl.Builder exposing (Builder, builder, path, replacePath, toUrlChange, insertQuery)
+import RouteUrl.Builder exposing (Builder, builder, path, appendToPath, toUrlChange, insertQuery)
 
 
--- TODO: keep state in sync with URL
+-- TODO: just give copy state and input state buttons
 
 
 main : RouteUrlProgram Never Model Msg
@@ -123,8 +123,7 @@ view accounts =
 delta2url : Model -> Model -> Maybe UrlChange
 delta2url previous current =
     Maybe.map toUrlChange <|
-        (builder
-            |> Array.foldl (\account queryString -> insertQuery toString current) Just current
+            |> Just
         )
 
 
@@ -133,9 +132,26 @@ delta2url previous current =
 -- TODO: use updateQuery on each account query entry to add append a list of income event infos
 
 
-singleAccountQueryString : Account.Model -> Builder
-singleAccountQueryString account =
-    insertQuery account.name
+queryableString : Account.Model -> String
+queryableString account =
+    "account:"
+        ++ account.name
+        ++ ",initialValue:"
+        ++ (toString account.initialValue)
+        ++ ",incomeEvents:"
+        ++ (Array.foldl
+                (\incomeEvent eventStr ->
+                    "name:"
+                        ++ incomeEvent.name
+                        ++ ",flatChange:"
+                        ++ (toString incomeEvent.flatChange)
+                        ++ ",percentChange:"
+                        ++ (toString incomeEvent.percentChange)
+                        ++ ";"
+                )
+                ""
+                account.incomeEvents
+           )
 
 
 
