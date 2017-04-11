@@ -13,9 +13,8 @@ import RouteUrl exposing (App, UrlChange, RouteUrlProgram)
 import RouteUrl.Builder exposing (Builder, builder, path, appendToPath, toUrlChange, insertQuery)
 
 
--- TODO: just give copy state and input state buttons
-
-
+-- TODO: should take input from URL (grab it from Javascript) and make it
+-- our model
 main : RouteUrlProgram Never Model Msg
 main =
     RouteUrl.program
@@ -49,6 +48,7 @@ init =
     ( Array.fromList [ (Account.init) ], Cmd.none )
 
 
+-- TODO: Should export the model and the extrapolation
 port exportExtrapolation : BudgetMath.Model -> Cmd msg
 
 
