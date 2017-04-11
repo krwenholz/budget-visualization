@@ -51,7 +51,7 @@ init =
 -- TODO: Should export the model and the extrapolation
 
 
-port exportExtrapolation : BudgetMath.Model -> Cmd msg
+port exportExtrapolation : ( BudgetMath.Model, Model ) -> Cmd msg
 
 
 updateAccounts : Msg -> Model -> Model
@@ -77,7 +77,7 @@ update action accounts =
         updatedModel =
             updateAccounts action accounts
     in
-        ( updatedModel, exportExtrapolation (BudgetMath.asData updatedModel) )
+        ( updatedModel, exportExtrapolation ( BudgetMath.asData updatedModel, updatedModel ) )
 
 
 accountListItem : Int -> Account.Model -> Html Msg

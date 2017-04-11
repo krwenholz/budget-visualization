@@ -33,7 +33,9 @@ var lineChart;
 var displayDiv = document.getElementById('budget-input')
 var app = Elm.BudgetVisualization.embed(displayDiv);
 
-app.ports.exportExtrapolation.subscribe(function(extrapolation) {
+app.ports.exportExtrapolation.subscribe(function(message) {
+  extrapolation = message[0];
+  console.log('Model is :' + message[1]);
   extrapolation.datasets.forEach(function(data, index, array) {
     data.backgroundColor = colors[index % colors.length];
     data.borderColor = colors[index % colors.length];
