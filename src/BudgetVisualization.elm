@@ -18,7 +18,7 @@ import RouteUrl.Builder exposing (Builder, builder, path, appendToPath, toUrlCha
 
 
 main =
-    Html.program
+    Html.programWithFlags
         { init = init
         , update = update
         , subscriptions = \_ -> Sub.none
@@ -42,16 +42,25 @@ type alias Model =
     Array Account.Model
 
 
-init : ( Model, Cmd Msg )
-init =
-    ( Array.fromList [ (Account.init) ], Cmd.none )
+type alias Flags =
+    Maybe Model
+
+
+init : Flags -> ( Model, Cmd Msg )
+init flags =
+    case flags of
+        Just model ->
+            ( model, Cmd.none )
+
+        Nothing ->
+            ( Array.fromList [ (Account.init) ], Cmd.none )
 
 
 
 -- TODO: Should export the model and the extrapolation
 
 
-port exportExtrapolation : ( BudgetMath.Model, Model ) -> Cmd msg
+port output : ( BudgetMath.Model, Model ) -> Cmd msg
 
 
 updateAccounts : Msg -> Model -> Model
@@ -77,7 +86,7 @@ update action accounts =
         updatedModel =
             updateAccounts action accounts
     in
-        ( updatedModel, exportExtrapolation ( BudgetMath.asData updatedModel, updatedModel ) )
+        ( updatedModel, output ( BudgetMath.asData updatedModel, updatedModel ) )
 
 
 accountListItem : Int -> Account.Model -> Html Msg
