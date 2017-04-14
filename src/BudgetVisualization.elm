@@ -5,7 +5,7 @@ import Array exposing (Array, map, indexedMap, push, set, get)
 import BudgetMath
 import DataStructureHelp exposing (removeFromArray)
 import Html exposing (Html, text, div, input, ul, li, button)
-import Html.Attributes exposing (placeholder, type_, id, width, height, class)
+import Html.Attributes exposing (placeholder, type_, id, width, height, class, attribute)
 import Html.Events exposing (onInput, onClick)
 import Maybe exposing (withDefault)
 import Navigation exposing (Location)
@@ -18,7 +18,7 @@ import RouteUrl.Builder exposing (Builder, builder, path, appendToPath, toUrlCha
 
 
 main =
-    Html.programWithFlags
+    Html.program
         { init = init
         , update = update
         , subscriptions = \_ -> Sub.none
@@ -42,22 +42,9 @@ type alias Model =
     Array Account.Model
 
 
-type alias Flags =
-    Maybe Model
-
-
-init : Flags -> ( Model, Cmd Msg )
-init flags =
-    case flags of
-        Just model ->
-            ( model, Cmd.none )
-
-        Nothing ->
-            ( Array.fromList [ (Account.init) ], Cmd.none )
-
-
-
--- TODO: Should export the model and the extrapolation
+init : ( Model, Cmd Msg )
+init =
+    ( Array.fromList [ (Account.init) ], Cmd.none )
 
 
 port output : ( BudgetMath.Model, Model ) -> Cmd msg
@@ -118,10 +105,16 @@ accountsList accounts =
         )
 
 
+copyModelJavascript : Model -> String
+copyModelJavascript model =
+    "window.prompt(\"Copy to clipboard: Ctrl+C, Enter\", '" ++ (toString model) ++ "');"
+
+
 view : Model -> Html Msg
 view accounts =
     div
         []
         [ accountsList accounts
         , button [ onClick NewAccount ] [ text "+" ]
+        , button [ attribute "onclick" (copyModelJavascript accounts) ] [ text "Save for later" ]
         ]
