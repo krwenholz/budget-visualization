@@ -7,6 +7,7 @@ import DataStructureHelp exposing (removeFromArray)
 import Html exposing (Html, text, div, input, ul, li, button)
 import Html.Attributes exposing (placeholder, type_, id, width, height, class, attribute)
 import Html.Events exposing (onInput, onClick)
+import Json.Encode as Encode
 import Maybe exposing (withDefault)
 import Navigation exposing (Location)
 import RouteUrl exposing (App, UrlChange, RouteUrlProgram)
@@ -105,9 +106,14 @@ accountsList accounts =
         )
 
 
+encodeModel : Model -> Encode.Value
+encodeModel model =
+    Encode.array <| Array.map Account.encode model
+
+
 copyModelJavascript : Model -> String
 copyModelJavascript model =
-    "window.prompt(\"Copy to clipboard: Ctrl+C, Enter\", '" ++ (toString model) ++ "');"
+    "window.prompt(\"Copy to clipboard: Ctrl+C, Enter\", '" ++ (Encode.encode 0 <| encodeModel model) ++ "');"
 
 
 view : Model -> Html Msg

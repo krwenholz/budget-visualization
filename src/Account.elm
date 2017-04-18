@@ -1,9 +1,10 @@
-module Account exposing (Msg, Model, IncomeEvent, init, update, view)
+module Account exposing (Msg, Model, IncomeEvent, encode, init, update, view)
 
+import Array exposing (Array, map, indexedMap, push, set)
 import Html exposing (Html, text, div, input, ul, li, button, label)
 import Html.Attributes exposing (placeholder, type_, id, width, height, class)
 import Html.Events exposing (onInput, onClick)
-import Array exposing (Array, map, indexedMap, push, set)
+import Json.Encode as Encode
 import Result exposing (fromMaybe)
 import DataStructureHelp exposing (removeFromArray)
 
@@ -63,6 +64,30 @@ init =
     , initialValue = 10.0
     , incomeEvents = Array.fromList [ (emptyIncomeEvent) ]
     }
+
+
+encodeIncomeEvent : IncomeEvent -> Encode.Value
+encodeIncomeEvent { name, flatChange, percentChange } =
+    let
+        jname =
+            Encode.string name
+
+        jflat =
+            Encode.float flatChange
+
+        jpercent =
+            Encode.float percentChange
+    in
+        Encode.object [ ( "name", jname ), ( "flatChange", jflat ), ( "percentChange", jpercent ) ]
+
+
+encode : Model -> Encode.Value
+encode { name, initialValue, incomeEvents } =
+    let
+        encodedIncomeEvents =
+            Encode.array <| Array.map encodeIncomeEvent incomeEvents
+    in
+        Encode.object [ ( "name", Encode.string name ), ( "initialValue", Encode.float initialValue ), ( "incomeEvents", encodedIncomeEvents ) ]
 
 
 update : Msg -> Model -> Model
