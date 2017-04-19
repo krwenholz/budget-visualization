@@ -5,8 +5,11 @@ import Array exposing (Array, map, indexedMap, push, set, get)
 import BudgetMath
 import DataStructureHelp exposing (removeFromArray)
 import Html exposing (Html, text, div, input, ul, li, button)
-import Html.Attributes exposing (placeholder, type_, id, width, height, class, attribute)
+import Html.Attributes exposing (placeholder, type_, id, class, attribute)
 import Html.Events exposing (onInput, onClick)
+import Json.Decode as Decode
+import Json.Decode.Pipeline as DPipeline
+import Json.Encode as Encode
 import Json.Encode as Encode
 import Maybe exposing (withDefault)
 import Navigation exposing (Location)
@@ -37,6 +40,7 @@ type Msg
     = UpdateAccount UpdateAcountMsg
     | DeleteAccount Int
     | NewAccount
+    | RestoreAccounts String
 
 
 type alias Model =
@@ -46,6 +50,16 @@ type alias Model =
 init : ( Model, Cmd Msg )
 init =
     ( Array.fromList [ (Account.init) ], Cmd.none )
+
+
+encode : Model -> Encode.Value
+encode model =
+    Encode.array <| Array.map Account.encode model
+
+
+decode : Decode.Decoder Model
+decode =
+    (Decode.array Account.decode)
 
 
 port output : ( BudgetMath.Model, Model ) -> Cmd msg
@@ -66,6 +80,15 @@ updateAccounts action accounts =
 
         NewAccount ->
             push Account.init accounts
+
+        RestoreAccounts jsonAccounts ->
+            case Decode.decodeString decode jsonAccounts of
+                Err _ ->
+                    Array.fromList [ (Account.init) ]
+
+                --accounts
+                Ok newModel ->
+                    newModel
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
@@ -106,14 +129,9 @@ accountsList accounts =
         )
 
 
-encodeModel : Model -> Encode.Value
-encodeModel model =
-    Encode.array <| Array.map Account.encode model
-
-
 copyModelJavascript : Model -> String
 copyModelJavascript model =
-    "window.prompt(\"Copy to clipboard: Ctrl+C, Enter\", '" ++ (Encode.encode 0 <| encodeModel model) ++ "');"
+    "window.prompt(\"Copy to clipboard: Ctrl+C, Enter\", '" ++ (Encode.encode 0 <| encode model) ++ "');"
 
 
 view : Model -> Html Msg
@@ -122,5 +140,12 @@ view accounts =
         []
         [ accountsList accounts
         , button [ onClick NewAccount ] [ text "+" ]
-        , button [ attribute "onclick" (copyModelJavascript accounts) ] [ text "Save for later" ]
+        , button [ attribute "onclick" (copyModelJavascript accounts), class "saveButton" ] [ text "Save for later" ]
+        , input
+            [ type_ "text"
+            , placeholder "Restore your saved session by pasting it here."
+            , onInput RestoreAccounts
+            , class "accountInput"
+            ]
+            []
         ]

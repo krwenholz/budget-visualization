@@ -1,9 +1,11 @@
-module Account exposing (Msg, Model, IncomeEvent, encode, init, update, view)
+module Account exposing (Msg, Model, IncomeEvent, decode, encode, init, update, view)
 
 import Array exposing (Array, map, indexedMap, push, set)
 import Html exposing (Html, text, div, input, ul, li, button, label)
-import Html.Attributes exposing (placeholder, type_, id, width, height, class)
+import Html.Attributes exposing (placeholder, type_, class)
 import Html.Events exposing (onInput, onClick)
+import Json.Decode as Decode
+import Json.Decode.Pipeline as DPipeline
 import Json.Encode as Encode
 import Result exposing (fromMaybe)
 import DataStructureHelp exposing (removeFromArray)
@@ -88,6 +90,22 @@ encode { name, initialValue, incomeEvents } =
             Encode.array <| Array.map encodeIncomeEvent incomeEvents
     in
         Encode.object [ ( "name", Encode.string name ), ( "initialValue", Encode.float initialValue ), ( "incomeEvents", encodedIncomeEvents ) ]
+
+
+decodeIncomeEvent : Decode.Decoder IncomeEvent
+decodeIncomeEvent =
+    DPipeline.decode IncomeEvent
+        |> DPipeline.required "name" Decode.string
+        |> DPipeline.required "flatChange" Decode.float
+        |> DPipeline.required "percentChange" Decode.float
+
+
+decode : Decode.Decoder Model
+decode =
+    DPipeline.decode Model
+        |> DPipeline.required "name" Decode.string
+        |> DPipeline.required "initialValue" Decode.float
+        |> DPipeline.required "incomeEvents" (Decode.array <| decodeIncomeEvent)
 
 
 update : Msg -> Model -> Model
