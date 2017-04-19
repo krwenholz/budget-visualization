@@ -57,18 +57,9 @@ var colors = getColors();
 var lineChart;
 
 var displayDiv = document.getElementById('budget-input')
-// TODO: give URL to program
-input = queryStringToJson(location.hash);
-console.log(input);
-var app = Elm.BudgetVisualization.embed(displayDiv, input);
+var app = Elm.BudgetVisualization.embed(displayDiv);
 
 app.ports.output.subscribe(function(message) {
-  // Adjust URL
-  model = message[1]
-  baseUrl = location.href.substring(0, location.href.indexOf('?') + 1);
-  //location.href = baseUrl + serialize(model);
-  location.replace('#' + serialize(model));
-
   // Graph
   extrapolation = message[0];
   extrapolation.datasets.forEach(function(data, index, array) {
