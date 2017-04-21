@@ -59,9 +59,8 @@ var lineChart;
 var displayDiv = document.getElementById('budget-input')
 var app = Elm.BudgetVisualization.embed(displayDiv);
 
-app.ports.output.subscribe(function(message) {
+app.ports.output.subscribe(function(extrapolation) {
   // Graph
-  extrapolation = message[0];
   extrapolation.datasets.forEach(function(data, index, array) {
     data.backgroundColor = colors[index % colors.length];
     data.borderColor = colors[index % colors.length];

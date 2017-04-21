@@ -62,7 +62,7 @@ decode =
     (Decode.array Account.decode)
 
 
-port output : ( BudgetMath.Model, Model ) -> Cmd msg
+port output : BudgetMath.Model -> Cmd msg
 
 
 updateAccounts : Msg -> Model -> Model
@@ -97,7 +97,7 @@ update action accounts =
         updatedModel =
             updateAccounts action accounts
     in
-        ( updatedModel, output ( BudgetMath.asData updatedModel, updatedModel ) )
+        ( updatedModel, output (BudgetMath.asData updatedModel) )
 
 
 accountListItem : Int -> Account.Model -> Html Msg
@@ -105,7 +105,7 @@ accountListItem index account =
     li []
         [ div []
             [ button
-                [ onClick (DeleteAccount index) ]
+                [ onClick (DeleteAccount index), class "delete-account" ]
                 [ text "-" ]
             , Html.map
                 (\update ->
@@ -122,7 +122,7 @@ accountListItem index account =
 
 accountsList : Array Account.Model -> Html Msg
 accountsList accounts =
-    ul [ class "accountList" ]
+    ul [ class "account-list" ]
         (Array.toList <|
             indexedMap (\index account -> accountListItem index account)
                 accounts
@@ -139,13 +139,13 @@ view accounts =
     div
         []
         [ accountsList accounts
-        , button [ onClick NewAccount ] [ text "+" ]
-        , button [ attribute "onclick" (copyModelJavascript accounts), class "saveButton" ] [ text "Save for later" ]
+        , button [ onClick NewAccount, class "new-account" ] [ text "+" ]
+        , button [ attribute "onclick" (copyModelJavascript accounts), class "save-button" ] [ text "Save for later" ]
         , input
             [ type_ "text"
             , placeholder "Restore your saved session by pasting it here."
             , onInput RestoreAccounts
-            , class "accountInput"
+            , class "restore"
             ]
             []
         ]

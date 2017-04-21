@@ -141,7 +141,7 @@ readFloat numberText =
 incomeEventInput : IncomeEvent -> Int -> Html Msg
 incomeEventInput incomeEvent index =
     div
-        [ class "incomeEvent" ]
+        [ class "income-event" ]
         [ input
             [ type_ "text"
             , placeholder incomeEvent.name
@@ -150,10 +150,10 @@ incomeEventInput incomeEvent index =
                     UpdateIncomeEvent <|
                         UpdateIncomeEventMsg index { incomeEvent | name = newName }
                 )
-            , class "incomeEventName"
+            , class "income-event-name"
             ]
             []
-        , button [ onClick <| DeleteIncomeEvent index ]
+        , button [ onClick <| DeleteIncomeEvent index, class "delete-income-event" ]
             [ text "-" ]
         , label []
             [ text "Flat monthly change: "
@@ -165,7 +165,7 @@ incomeEventInput incomeEvent index =
                         UpdateIncomeEvent <|
                             UpdateIncomeEventMsg index { incomeEvent | flatChange = readFloat change }
                     )
-                , class "incomeEventFlatChange"
+                , class "income-event-flat-change"
                 ]
                 []
             ]
@@ -179,7 +179,7 @@ incomeEventInput incomeEvent index =
                         UpdateIncomeEvent <|
                             UpdateIncomeEventMsg index { incomeEvent | percentChange = readFloat change }
                     )
-                , class "incomeEventPercentChange"
+                , class "income-event-percent-change"
                 ]
                 []
             ]
@@ -199,7 +199,7 @@ incomeEventInputs incomeEvents =
                     )
                     incomeEvents
             )
-        , button [ onClick (NewIncomeEvent) ] [ text "+" ]
+        , button [ onClick (NewIncomeEvent), class "new-income-event" ] [ text "+" ]
         ]
 
 
@@ -216,7 +216,7 @@ view account =
                         , initialValue = account.initialValue
                         }
                 )
-            , class "accountName"
+            , class "account-name"
             ]
             []
         , label []
@@ -231,7 +231,7 @@ view account =
                             , initialValue = readFloat initialValue
                             }
                     )
-                , class "accountValue"
+                , class "account-value"
                 ]
                 []
             ]
