@@ -24,7 +24,7 @@ type alias Model =
 
 applyEvent : Float -> Account.IncomeEvent -> Float -> Float
 applyEvent initialValue { name, flatChange, percentChange } currentValue =
-    currentValue + (initialValue * (0.01 * percentChange)) + flatChange
+    currentValue + (initialValue * (0.01 * (percentChange / 12))) + flatChange
 
 
 valueAfterEvents : Array Account.IncomeEvent -> Float -> Float
