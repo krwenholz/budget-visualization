@@ -103,7 +103,7 @@ update action accounts =
 accountListItem : Int -> Account.Model -> Html Msg
 accountListItem index account =
     li []
-        [ div []
+        [ div [ class "account" ]
             [ button
                 [ onClick (DeleteAccount index), class "delete-account" ]
                 [ text "-" ]

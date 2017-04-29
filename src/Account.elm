@@ -142,19 +142,21 @@ incomeEventInput : IncomeEvent -> Int -> Html Msg
 incomeEventInput incomeEvent index =
     div
         [ class "income-event" ]
-        [ input
-            [ type_ "text"
-            , placeholder incomeEvent.name
-            , onInput
-                (\newName ->
-                    UpdateIncomeEvent <|
-                        UpdateIncomeEventMsg index { incomeEvent | name = newName }
-                )
-            , class "income-event-name"
-            ]
-            []
-        , button [ onClick <| DeleteIncomeEvent index, class "delete-income-event" ]
+        [ button [ onClick <| DeleteIncomeEvent index, class "delete-income-event prefix" ]
             [ text "-" ]
+        , div [ class "input-field" ]
+            [ input
+                [ type_ "text"
+                , placeholder incomeEvent.name
+                , onInput
+                    (\newName ->
+                        UpdateIncomeEvent <|
+                            UpdateIncomeEventMsg index { incomeEvent | name = newName }
+                    )
+                , class "income-event-name"
+                ]
+                []
+            ]
         , div [ class "input-field" ]
             [ label []
                 [ text "Flat monthly change" ]
@@ -207,7 +209,7 @@ incomeEventInputs incomeEvents =
 
 view : Model -> Html Msg
 view account =
-    div [ class "account" ]
+    div []
         [ input
             [ type_ "text"
             , placeholder account.name
