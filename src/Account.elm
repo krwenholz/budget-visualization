@@ -222,9 +222,7 @@ view account =
             ]
             []
         , div [ class "input-field inline" ]
-            [ label []
-                [ text "$" ]
-            , input
+            [ input
                 [ type_ "number"
                 , placeholder <| toString account.initialValue
                 , onInput
@@ -237,6 +235,8 @@ view account =
                 , class "account-value"
                 ]
                 []
+            , label []
+                [ text "$" ]
             ]
         , incomeEventInputs account.incomeEvents
         ]
