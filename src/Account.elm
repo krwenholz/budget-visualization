@@ -142,7 +142,7 @@ incomeEventInput : IncomeEvent -> Int -> Html Msg
 incomeEventInput incomeEvent index =
     div
         [ class "income-event" ]
-        [ button [ onClick <| DeleteIncomeEvent index, class "delete-income-event prefix" ]
+        [ button [ onClick <| DeleteIncomeEvent index, class "delete-income-event" ]
             [ text "-" ]
         , div [ class "input-field" ]
             [ input
