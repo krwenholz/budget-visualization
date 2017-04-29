@@ -221,7 +221,7 @@ view account =
             , class "account-name"
             ]
             []
-        , div [ class "input-field" ]
+        , div [ class "input-field inline" ]
             [ label []
                 [ text "$" ]
             , input
