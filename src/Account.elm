@@ -155,8 +155,9 @@ incomeEventInput incomeEvent index =
             []
         , button [ onClick <| DeleteIncomeEvent index, class "delete-income-event" ]
             [ text "-" ]
-        , label []
-            [ text "Flat monthly change: "
+        , div [ class "input-field" ]
+            [ label []
+                [ text "Flat monthly change" ]
             , input
                 [ type_ "number"
                 , placeholder <| toString incomeEvent.flatChange
@@ -169,8 +170,9 @@ incomeEventInput incomeEvent index =
                 ]
                 []
             ]
-        , label []
-            [ text "Percent yearly change: "
+        , div [ class "input-field" ]
+            [ label []
+                [ text "Percent yearly change" ]
             , input
                 [ type_ "number"
                 , placeholder <| toString incomeEvent.percentChange
@@ -219,8 +221,9 @@ view account =
             , class "account-name"
             ]
             []
-        , label []
-            [ text "$"
+        , div [ class "input-field" ]
+            [ label []
+                [ text "$" ]
             , input
                 [ type_ "number"
                 , placeholder <| toString account.initialValue
